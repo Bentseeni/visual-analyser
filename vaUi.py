@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import filedialog as fd
 
 dlg = os.getcwd()
+saveLocation =  os.getcwd()
 
 class UI(Frame):
 
@@ -41,6 +42,9 @@ class UI(Frame):
 
         self.saveButton = Button(self.parent,text="Save location", command = self.selectSaveLocation)
         self.saveButton.grid(row  = 1, column=1)
+
+        self.analyseButton = Button(self.parent,text="Analyse", command = self.startAnalyse)
+        self.analyseButton.grid(row = 2, column=0)
 
         self.lbl = Label(self.parent, text="asd")
         self.lbl.grid(row=4, column=0)
@@ -84,7 +88,14 @@ class UI(Frame):
 
     def selectSaveLocation(self):
 
-        print("lol")
+        saveLocation = fd.askdirectory()
+        self.saveFileEntry.delete(0,END)
+        self.saveFileEntry.insert(0,saveLocation)
+        print(saveLocation)
+
+    def startAnalyse(self):
+
+        print(saveLocation)
 
 def main():
 
