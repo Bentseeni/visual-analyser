@@ -28,8 +28,22 @@ class UI(Frame):
         fileMenu.add_command(label="Open", command=self.onOpen)
         menubar.add_cascade(label="File", menu=fileMenu)
 
+        self.openFileEntry = Entry(self.parent, width= 50)
+        self.openFileEntry.grid(row=0 , column=0)
+        self.openFileEntry.insert(0,os.getcwd())
+
+        self.saveFileEntry = Entry(self.parent, width= 50)
+        self.saveFileEntry.grid(row=1, column=0)
+        self.saveFileEntry.insert(0,os.getcwd())
+
+        self.openButton = Button(self.parent,text="Open file",command = self.onOpen)
+        self.openButton.grid(row = 0, column=1)
+
+        self.saveButton = Button(self.parent,text="Save location", command = self.selectSaveLocation)
+        self.saveButton.grid(row  = 1, column=1)
+
         self.lbl = Label(self.parent, text="asd")
-        self.lbl.grid(row=1, column=0)
+        self.lbl.grid(row=4, column=0)
        # self.txt = Text(self.parent)
         #self.txt.grid(column=0,row=0)
        # self.txt.pack(fill=BOTH, expand=1)
@@ -51,6 +65,8 @@ class UI(Frame):
             print(dlg)
         #self.txt.insert(END, dlg)
         self.lbl['text'] = dlg
+        self.openFileEntry.delete(0,END)
+        self.openFileEntry.insert(0,dlg)
 
 
        # if dlg != '':
@@ -66,11 +82,15 @@ class UI(Frame):
         text = f.read()
         return text
 
+    def selectSaveLocation(self):
+
+        print("lol")
+
 def main():
 
     root = Tk()
     ui = UI(root)
-    root.geometry("300x250+300+300")
+    root.geometry("400x450+300+300")
     root.mainloop()
 
 if __name__ == '__main__':
