@@ -43,6 +43,9 @@ class UI(Frame):
         self.saveButton = Button(self.parent,text="Save location", command = self.selectSaveLocation)
         self.saveButton.grid(row  = 1, column=1)
 
+        # iou & confidence
+        # select .weights & select classes .names
+
         self.analyseButton = Button(self.parent,text="Analyse", command = self.startAnalyse)
         self.analyseButton.grid(row = 2, column=0)
 
