@@ -4,13 +4,10 @@ from tkinter import filedialog as fd
 import load_weights
 import threading
 import pathlib
-
-
-
+import detect
 
 
 class UI(Frame):
-
     dlg = os.getcwd()
     saveLocation = os.getcwd()
     weightsLocation = ""
@@ -51,22 +48,22 @@ class UI(Frame):
 
         # iou & confidence
         # select .weights & select classes .names
-        self.iouEntry = Entry(self.parent,width=5)
-        self.iouEntry.grid(row=2,column=0)
-        self.iouEntry.insert(0,"0.5")
+        self.iouEntry = Entry(self.parent, width=5)
+        self.iouEntry.grid(row=2, column=0)
+        self.iouEntry.insert(0, "0.5")
 
-        self.confidenceEntry = Entry(self.parent, width=5, text= 0.5)
+        self.confidenceEntry = Entry(self.parent, width=5, text=0.5)
         self.confidenceEntry.grid(row=3, column=0)
-        self.confidenceEntry.insert(0,"0.5")
+        self.confidenceEntry.insert(0, "0.5")
 
-        self.loadWeightsButton = Button(self.parent,text="Load Weights", command=self.threadStartWeights)
-        self.loadWeightsButton.grid(row=4,column=0)
+        self.loadWeightsButton = Button(self.parent, text="Load Weights", command=self.threadStartWeights)
+        self.loadWeightsButton.grid(row=4, column=0)
 
         self.analyseButton = Button(self.parent, text="Analyse", command=self.startAnalyse)
         self.analyseButton.grid(row=5, column=0)
 
-        #self.lbl = Label(self.parent, text="asd")
-        #self.lbl.grid(row=4, column=0)
+        # self.lbl = Label(self.parent, text="asd")
+        # self.lbl.grid(row=4, column=0)
 
     # self.txt = Text(self.parent)
     # self.txt.grid(column=0,row=0)
@@ -83,14 +80,14 @@ class UI(Frame):
         # fl = dlg.show()
         print(self.dlg)
 
-        #if type(self.dlg) is not tuple:
+        # if type(self.dlg) is not tuple:
         #    print(pathlib.Path(self.dlg).suffix)
 
-        #if self.dlg == '':
-         #   self.dlg = os.getcwd()
+        # if self.dlg == '':
+        #   self.dlg = os.getcwd()
         #    print(self.dlg)
         # self.txt.insert(END, dlg)
-        #self.lbl['text'] = dlg
+        # self.lbl['text'] = dlg
         self.openFileEntry.delete(0, END)
         self.openFileEntry.insert(0, self.dlg)
 
@@ -112,8 +109,8 @@ class UI(Frame):
 
     def selectClasses(self):
         ftypes = [('Classes', '*.names'), ('All files', '*')]
-        classesLocation = fd.askopenfilename(filetypes=ftypes)
-        print(classesLocation)
+        self.classesLocation = fd.askopenfilename(filetypes=ftypes)
+        print(self.classesLocation)
 
     def selectSaveLocation(self):
         self.saveLocation = fd.askdirectory()
@@ -121,23 +118,25 @@ class UI(Frame):
         self.saveFileEntry.insert(0, self.saveLocation)
         print(self.saveLocation)
 
-
     def startAnalyse(self):
         print(self.dlg)
-        #dlg_extension = os.path.splitext(self.dlg)[1]
-        #print(dlg_extension)
-        #if pathlib.Path(self.dlg).suffix == '.jpg':
+        # dlg_extension = os.path.splitext(self.dlg)[1]
+        # print(dlg_extension)
+        # if pathlib.Path(self.dlg).suffix == '.jpg':
         #    print(pathlib.Path(self.dlg).suffix)
 
         if pathlib.Path(self.dlg[0]).suffix == ".mp4" and len(self.dlg) == 0:
             print(pathlib.Path(self.dlg[0]).suffix)
+            detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
+                        float(self.confidenceEntry.get()), self.classesLocation)
 
         elif pathlib.Path(self.dlg[0]).suffix == ".jpg":
             print(pathlib.Path(self.dlg[0]).suffix)
+            detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
+                        float(self.confidenceEntry.get()), self.classesLocation)
 
         # float(self.iouEntry.get())
         # float(self.confidenceEntry.get())
-
 
     def threadStartWeights(self):
         t = threading.Thread(target=self.startLoadWeights)
@@ -145,6 +144,7 @@ class UI(Frame):
 
     def startLoadWeights(self):
         load_weights.main()
+
 
 def main():
     root = Tk()
