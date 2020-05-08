@@ -11,7 +11,7 @@ Example:
 
 Note that only one video can be processed at one run.
 """
-
+import os
 import tensorflow as tf
 import sys
 import cv2
@@ -26,7 +26,7 @@ _CLASS_NAMES_FILE = './data/labels/coco.names'
 _MAX_OUTPUT_SIZE = 20
 
 
-def main(type, input_names, iou_threshold=0.5, confidence_threshold=0.5, class_names_file=_CLASS_NAMES_FILE):
+def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confidence_threshold=0.5, class_names_file=_CLASS_NAMES_FILE):
     class_names = load_class_names(class_names_file)
     n_classes = len(class_names)
 
@@ -46,7 +46,7 @@ def main(type, input_names, iou_threshold=0.5, confidence_threshold=0.5, class_n
             saver.restore(sess, './weights/model.ckpt')
             detection_result = sess.run(detections, feed_dict={inputs: batch})
 
-        draw_boxes(input_names, detection_result, class_names, _MODEL_SIZE)
+        draw_boxes(input_names, detection_result, class_names, _MODEL_SIZE, save_folder)
 
         print('Detections have been saved successfully.')
 
@@ -65,7 +65,9 @@ def main(type, input_names, iou_threshold=0.5, confidence_threshold=0.5, class_n
                           cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
             fourcc = cv2.VideoWriter_fourcc(*'X264')
             fps = cap.get(cv2.CAP_PROP_FPS)
-            out = cv2.VideoWriter('./detections/detections.mp4', fourcc, fps,
+            input_name_base = os.path.basename(input_names[0])
+            video_save_path = save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.mp4'
+            out = cv2.VideoWriter(video_save_path, fourcc, fps,
                                   (int(frame_size[0]), int(frame_size[1])))
 
             try:
@@ -143,4 +145,4 @@ def main(type, input_names, iou_threshold=0.5, confidence_threshold=0.5, class_n
 
 
 if __name__ == '__main__':
-    main(sys.argv[1], float(sys.argv[2]), float(sys.argv[3]), sys.argv[4:])
+    main(sys.argv[1], sys.argv[6:], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]), sys.argv[5])
