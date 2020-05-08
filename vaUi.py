@@ -2,6 +2,7 @@ import os
 from tkinter import *
 from tkinter import filedialog as fd
 import load_weights
+import threading
 
 dlg = os.getcwd()
 saveLocation = os.getcwd()
@@ -47,7 +48,7 @@ class UI(Frame):
         # iou & confidence
         # select .weights & select classes .names
 
-        self.loadWeightsButton = Button(self.parent,text="Load Weights", command=self.startLoadWeights)
+        self.loadWeightsButton = Button(self.parent,text="Load Weights", command=self.threadStartWeights)
         self.loadWeightsButton.grid(row=2,column=0)
 
         self.analyseButton = Button(self.parent, text="Analyse", command=self.startAnalyse)
@@ -109,8 +110,12 @@ class UI(Frame):
     def startAnalyse(self):
         print(saveLocation)
 
+    def threadStartWeights(self):
+        t = threading.Thread(target=self.startLoadWeights)
+        t.start()
+
     def startLoadWeights(self):
-        load_weights
+        load_weights.main()
 
 def main():
     root = Tk()
