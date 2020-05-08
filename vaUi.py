@@ -77,7 +77,7 @@ class UI(Frame):
     # self.lbl.pack(fill=BOTH, expand=1)
 
     def onOpen(self):
-        ftypes = [('Video and images', '*.mp4 *.jpg'), ('All files', '*')]
+        ftypes = [('Video', '*.mp4'), ('Images', '*.jpg')]
         # dlg = tkFileDialog.Open(self, filetypes = ftypes)
         self.dlg = fd.askopenfilenames(filetypes=ftypes)
         # fl = dlg.show()
@@ -132,9 +132,9 @@ class UI(Frame):
         if pathlib.Path(self.dlg[0]).suffix == ".mp4" and len(self.dlg) == 0:
             print(pathlib.Path(self.dlg[0]).suffix)
 
-        else:
-            for var in self.dlg:
-                print(pathlib.Path(var).suffix)
+        elif pathlib.Path(self.dlg[0]).suffix == ".jpg":
+            print(pathlib.Path(self.dlg[0]).suffix)
+
         # float(self.iouEntry.get())
         # float(self.confidenceEntry.get())
 
