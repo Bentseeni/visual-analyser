@@ -4,6 +4,7 @@ import tensorflow as tf
 import numpy as np
 
 from yolo_v3 import Yolo_v3
+from utils import load_class_names
 
 tf.compat.v1.disable_eager_execution()
 
@@ -93,8 +94,11 @@ def load_weights(variables, file_name):
     return assign_ops
 
 
-def main():
-    model = Yolo_v3(n_classes=80, model_size=(416, 416),
+def main(weights_file='./weights/yolov3.weights', class_names_file='./data/labels/coco.names'):
+    class_names = load_class_names(class_names_file)
+    n_classes = len(class_names)
+
+    model = Yolo_v3(n_classes=n_classes, model_size=(416, 416),
                     max_output_size=5,
                     iou_threshold=0.5,
                     confidence_threshold=0.5)
@@ -104,7 +108,7 @@ def main():
     model(inputs, training=False)
 
     model_vars = tf.compat.v1.global_variables(scope='yolo_v3_model')
-    assign_ops = load_weights(model_vars, './weights/yolov3.weights')
+    assign_ops = load_weights(model_vars, weights_file)
 
     saver = tf.compat.v1.train.Saver(tf.compat.v1.global_variables(scope='yolo_v3_model'))
 

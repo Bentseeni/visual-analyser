@@ -20,14 +20,14 @@ from yolo_v3 import Yolo_v3
 from utils import load_images, load_class_names, draw_boxes, draw_frame
 
 tf.compat.v1.disable_eager_execution()
-
+#_CLASS_NAMES_FILE has the DEFAULT .names path
 _MODEL_SIZE = (416, 416)
 _CLASS_NAMES_FILE = './data/labels/coco.names'
 _MAX_OUTPUT_SIZE = 20
 
 
-def main(type, iou_threshold, confidence_threshold, input_names):
-    class_names = load_class_names(_CLASS_NAMES_FILE)
+def main(type, input_names, iou_threshold=0.5, confidence_threshold=0.5, class_names_file=_CLASS_NAMES_FILE):
+    class_names = load_class_names(class_names_file)
     n_classes = len(class_names)
 
     model = Yolo_v3(n_classes=n_classes, model_size=_MODEL_SIZE,
