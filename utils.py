@@ -1,5 +1,6 @@
 """Contains utility functions for Yolo v3 model."""
 
+import os
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from seaborn import color_palette
@@ -37,7 +38,7 @@ def load_class_names(file_name):
     return class_names
 
 
-def draw_boxes(img_names, boxes_dicts, class_names, model_size):
+def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./detections'):
     """Draws detected boxes.
     Args:
         img_names: A list of input images names.
@@ -82,7 +83,10 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size):
 
         rgb_img = img.convert('RGB')
 
-        rgb_img.save('./detections/detection_' + str(num + 1) + '.jpg')
+        input_name_base = os.path.basename(img_name)
+
+        rgb_img.save(save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.jpg')
+        #rgb_img.save(save_folder + '/' + str(num + 1) + '.jpg')
 
 
 def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
