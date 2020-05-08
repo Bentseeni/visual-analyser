@@ -1,6 +1,7 @@
 import os
 from tkinter import *
 from tkinter import filedialog as fd
+import load_weights
 
 dlg = os.getcwd()
 saveLocation = os.getcwd()
@@ -46,8 +47,11 @@ class UI(Frame):
         # iou & confidence
         # select .weights & select classes .names
 
+        self.loadWeightsButton = Button(self.parent,text="Load Weights", command=self.startLoadWeights)
+        self.loadWeightsButton.grid(row=2,column=0)
+
         self.analyseButton = Button(self.parent, text="Analyse", command=self.startAnalyse)
-        self.analyseButton.grid(row=2, column=0)
+        self.analyseButton.grid(row=3, column=0)
 
         self.lbl = Label(self.parent, text="asd")
         self.lbl.grid(row=4, column=0)
@@ -105,6 +109,8 @@ class UI(Frame):
     def startAnalyse(self):
         print(saveLocation)
 
+    def startLoadWeights(self):
+        load_weights
 
 def main():
     root = Tk()
