@@ -125,15 +125,15 @@ class UI(Frame):
         # if pathlib.Path(self.dlg).suffix == '.jpg':
         #    print(pathlib.Path(self.dlg).suffix)
 
-        if pathlib.Path(self.dlg[0]).suffix == ".mp4" and len(self.dlg) == 0:
+        if pathlib.Path(self.dlg[0]).suffix == ".MP4" and len(self.dlg) == 1:
             print(pathlib.Path(self.dlg[0]).suffix)
             detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
-                        float(self.confidenceEntry.get()), self.classesLocation)
+                        float(self.confidenceEntry.get()))
 
         elif pathlib.Path(self.dlg[0]).suffix == ".jpg":
             print(pathlib.Path(self.dlg[0]).suffix)
             detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
-                        float(self.confidenceEntry.get()), self.classesLocation)
+                        float(self.confidenceEntry.get()))
 
         # float(self.iouEntry.get())
         # float(self.confidenceEntry.get())
