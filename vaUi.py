@@ -132,8 +132,10 @@ class UI(Frame):
 
         elif pathlib.Path(self.dlg[0]).suffix.lower() == ".jpg":
             print(pathlib.Path(self.dlg[0]).suffix)
-            detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
-                        float(self.confidenceEntry.get()))
+            analyseThread = threading.Thread(target=self.analyseImages)
+            analyseThread.start()
+            #detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
+             #           float(self.confidenceEntry.get()))
 
         # float(self.iouEntry.get())
         # float(self.confidenceEntry.get())
@@ -145,6 +147,9 @@ class UI(Frame):
     def startLoadWeights(self):
         load_weights.main()
 
+    def analyseImages(self):
+        detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
+                   float(self.confidenceEntry.get()))
 
 def main():
     root = Tk()
