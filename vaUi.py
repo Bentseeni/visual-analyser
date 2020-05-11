@@ -10,8 +10,8 @@ import detect
 class UI(Frame):
     dlg = os.getcwd()
     saveLocation = os.getcwd()
-    weightsLocation = ""
-    classesLocation = ""
+    weightsLocation = "./weights/yolov3.weights"
+    classesLocation = "./data/labels/coco.names"
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
@@ -40,27 +40,41 @@ class UI(Frame):
         self.saveFileEntry.grid(row=1, column=0)
         self.saveFileEntry.insert(0, os.getcwd())
 
+        self.weightsFileEntry = Entry(self.parent, width=50)
+        self.weightsFileEntry.grid(row=2,column=0)
+        self.weightsFileEntry.insert(0, self.weightsLocation)
+
+        self.classesFileEntry = Entry(self.parent, width=50)
+        self.classesFileEntry.grid(row=3,column=0)
+        self.classesFileEntry.insert(0,self.classesLocation)
+
         self.openButton = Button(self.parent, text="Open file", command=self.onOpen)
         self.openButton.grid(row=0, column=1)
 
         self.saveButton = Button(self.parent, text="Save location", command=self.selectSaveLocation)
         self.saveButton.grid(row=1, column=1)
 
+        self.weightsFileButton = Button(self.parent,text="Weights location",command=self.selectWeights)
+        self.weightsFileButton.grid(row=2,column=1)
+
+        self.classesFileButton = Button(self.parent,text="Classes location", command=self.selectClasses)
+        self.classesFileButton.grid(row=3,column=1)
+
         # iou & confidence
         # select .weights & select classes .names
         self.iouEntry = Entry(self.parent, width=5)
-        self.iouEntry.grid(row=2, column=0)
+        self.iouEntry.grid(row=4, column=0)
         self.iouEntry.insert(0, "0.5")
 
         self.confidenceEntry = Entry(self.parent, width=5, text=0.5)
-        self.confidenceEntry.grid(row=3, column=0)
+        self.confidenceEntry.grid(row=5, column=0)
         self.confidenceEntry.insert(0, "0.5")
 
         self.loadWeightsButton = Button(self.parent, text="Load Weights", command=self.threadStartWeights)
-        self.loadWeightsButton.grid(row=4, column=0)
+        self.loadWeightsButton.grid(row=6, column=0)
 
         self.analyseButton = Button(self.parent, text="Analyse", command=self.startAnalyse)
-        self.analyseButton.grid(row=5, column=0)
+        self.analyseButton.grid(row=7, column=0)
 
         # self.lbl = Label(self.parent, text="asd")
         # self.lbl.grid(row=4, column=0)
@@ -79,6 +93,8 @@ class UI(Frame):
         self.dlg = fd.askopenfilenames(filetypes=ftypes)
         # fl = dlg.show()
         print(self.dlg)
+        if self.dlg == "":
+            self.dlg = os.getcwd()
 
         # if type(self.dlg) is not tuple:
         #    print(pathlib.Path(self.dlg).suffix)
@@ -104,16 +120,26 @@ class UI(Frame):
 
     def selectWeights(self):
         ftypes = [('Weights', '*.weights'), ('All files', '*')]
-        weightsLocation = fd.askopenfilename(filetypes=ftypes)
-        print(weightsLocation)
+        self.weightsLocation = fd.askopenfilename(filetypes=ftypes)
+        if self.weightsLocation == "":
+            self.weightsLocation = "./weights/yolov3.weights"
+        self.weightsFileEntry.delete(0,END)
+        self.weightsFileEntry.insert(0,self.weightsLocation)
+        print(self.weightsLocation)
 
     def selectClasses(self):
         ftypes = [('Classes', '*.names'), ('All files', '*')]
         self.classesLocation = fd.askopenfilename(filetypes=ftypes)
+        if self.classesLocation == "":
+            self.classesLocation = "./data/labels/coco.names"
+        self.classesFileEntry.delete(0,END)
+        self.classesFileEntry.insert(0,self.classesLocation)
         print(self.classesLocation)
 
     def selectSaveLocation(self):
         self.saveLocation = fd.askdirectory()
+        if self.saveLocation == "":
+            self.saveLocation = os.getcwd()
         self.saveFileEntry.delete(0, END)
         self.saveFileEntry.insert(0, self.saveLocation)
         print(self.saveLocation)
@@ -145,11 +171,16 @@ class UI(Frame):
         # float(self.confidenceEntry.get())
 
     def threadStartWeights(self):
-        t = threading.Thread(target=self.startLoadWeights)
-        t.start()
+
+        if self.classesFileEntry.get() == "" or self.weightsFileEntry.get() == "" :
+            print("no selected classes or weights")
+            return
+        else:
+            t = threading.Thread(target=self.startLoadWeights)
+            t.start()
 
     def startLoadWeights(self):
-        load_weights.main()
+        load_weights.main(weights_file=self.weightsFileEntry.get(),class_names_file=self.classesFileEntry.get())
 
     def analyseImages(self):
         detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
