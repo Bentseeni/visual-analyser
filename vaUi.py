@@ -129,7 +129,7 @@ class UI(Frame):
             print(pathlib.Path(self.dlg[0]).suffix)
             #detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
                         #float(self.confidenceEntry.get()))
-            analyseThreadVideo = threading.Thread(target=self.analyseVideo())
+            analyseThreadVideo = threading.Thread(target=self.analyseVideo)
             analyseThreadVideo.start()
 
 
