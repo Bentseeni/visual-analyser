@@ -81,6 +81,9 @@ class UI(Frame):
 
         self.confidenceLbl = Label(self.parent, text="confidence")
         self.confidenceLbl.grid(row = 6,column=1)
+
+        self.txt = Text(self.parent,height= 10, width=35)
+        self.txt.grid(row =8,column = 0,sticky=W, pady= 5)
     # self.txt = Text(self.parent)
     # self.txt.grid(column=0,row=0)
     # self.txt.pack(fill=BOTH, expand=1)
@@ -176,6 +179,8 @@ class UI(Frame):
 
         if self.classesFileEntry.get() == "" or self.weightsFileEntry.get() == "" :
             print("no selected classes or weights")
+            self.txt.insert(END,"\nno selected classes or weights")
+
             return
         else:
             t = threading.Thread(target=self.startLoadWeights)
