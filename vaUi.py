@@ -127,13 +127,17 @@ class UI(Frame):
 
         if pathlib.Path(self.dlg[0]).suffix.lower() == ".mp4":
             print(pathlib.Path(self.dlg[0]).suffix)
-            detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
-                        float(self.confidenceEntry.get()))
+            #detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
+                        #float(self.confidenceEntry.get()))
+            analyseThreadVideo = threading.Thread(target=self.analyseVideo())
+            analyseThreadVideo.start()
+
 
         elif pathlib.Path(self.dlg[0]).suffix.lower() == ".jpg":
             print(pathlib.Path(self.dlg[0]).suffix)
-            analyseThread = threading.Thread(target=self.analyseImages)
-            analyseThread.start()
+            analyseThreadImages = threading.Thread(target=self.analyseImages)
+            analyseThreadImages.start()
+
             #detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
              #           float(self.confidenceEntry.get()))
 
@@ -150,6 +154,12 @@ class UI(Frame):
     def analyseImages(self):
         detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
                    float(self.confidenceEntry.get()))
+
+    def analyseVideo(self):
+        detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
+                    float(self.confidenceEntry.get()))
+
+
 
 def main():
     root = Tk()
