@@ -63,22 +63,24 @@ class UI(Frame):
         # iou & confidence
         # select .weights & select classes .names
         self.iouEntry = Entry(self.parent, width=5)
-        self.iouEntry.grid(row=4, column=0)
+        self.iouEntry.grid(row=5, column=0,sticky= E)
         self.iouEntry.insert(0, "0.5")
 
         self.confidenceEntry = Entry(self.parent, width=5, text=0.5)
-        self.confidenceEntry.grid(row=5, column=0)
+        self.confidenceEntry.grid(row=6, column=0,sticky= E)
         self.confidenceEntry.insert(0, "0.5")
 
         self.loadWeightsButton = Button(self.parent, text="Load Weights", command=self.threadStartWeights)
-        self.loadWeightsButton.grid(row=6, column=0)
+        self.loadWeightsButton.grid(row=4, column=0)
 
         self.analyseButton = Button(self.parent, text="Analyse", command=self.startAnalyse)
         self.analyseButton.grid(row=7, column=0)
 
-        # self.lbl = Label(self.parent, text="asd")
-        # self.lbl.grid(row=4, column=0)
+        self.iouLbl = Label(self.parent, text="iou")
+        self.iouLbl.grid(row=5, column=1)
 
+        self.confidenceLbl = Label(self.parent, text="confidence")
+        self.confidenceLbl.grid(row = 6,column=1)
     # self.txt = Text(self.parent)
     # self.txt.grid(column=0,row=0)
     # self.txt.pack(fill=BOTH, expand=1)
@@ -119,7 +121,7 @@ class UI(Frame):
         return text
 
     def selectWeights(self):
-        ftypes = [('Weights', '*.weights'), ('All files', '*')]
+        ftypes = [('Weights', '*.weights')]
         self.weightsLocation = fd.askopenfilename(filetypes=ftypes)
         if self.weightsLocation == "":
             self.weightsLocation = "./weights/yolov3.weights"
@@ -128,7 +130,7 @@ class UI(Frame):
         print(self.weightsLocation)
 
     def selectClasses(self):
-        ftypes = [('Classes', '*.names'), ('All files', '*')]
+        ftypes = [('Classes', '*.names')]
         self.classesLocation = fd.askopenfilename(filetypes=ftypes)
         if self.classesLocation == "":
             self.classesLocation = "./data/labels/coco.names"
