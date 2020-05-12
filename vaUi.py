@@ -187,15 +187,52 @@ class UI(Frame):
             t.start()
 
     def startLoadWeights(self):
-        load_weights.main(weights_file=self.weightsFileEntry.get(),class_names_file=self.classesFileEntry.get())
+        try:
+            self.txt.insert(END, "\nLoading weights...")
+            load_weights.main(weights_file=self.weightsFileEntry.get(), class_names_file=self.classesFileEntry.get())
+            namespathfile = open("namespath.txt", "w")
+            namespathfile.write(self.classesFileEntry.get())
+            namespathfile.close()
+            self.txt.insert(END, "\nWeights loaded")
+        except Exception as err:
+            self.txt.insert(END, "\nerror loading weights")
+            self.txt.insert(END, err)
 
     def analyseImages(self):
-        detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
-                   float(self.confidenceEntry.get()))
+        namespath = self.classesLocation
+        try:
+            namespathfile = open("namespath.txt")
+            namespath = namespathfile.read()
+            namespathfile.close()
+        except Exception:
+            self.txt.insert(END, "\nCouldn't read namespath.txt, using default .names")
+
+        try:
+            self.txt.insert(END, "\nStarting image analysis...")
+            detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
+                        float(self.confidenceEntry.get()), namespath)
+            self.txt.insert(END, "\nImage analysis ended successfully")
+        except Exception as err:
+            self.txt.insert(END, "\nerror in image analysis")
+            self.txt.insert(END, err)
 
     def analyseVideo(self):
-        detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
-                    float(self.confidenceEntry.get()))
+        namespath = self.classesLocation
+        try:
+            namespathfile = open("namespath.txt")
+            namespath = namespathfile.read()
+            namespathfile.close()
+        except Exception:
+            self.txt.insert(END, "\nCouldn't read namespath.txt, using default .names")
+
+        try:
+            self.txt.insert(END, "\nStarting video analysis...")
+            detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
+                    float(self.confidenceEntry.get()), namespath)
+            self.txt.insert(END, "\nVideo analysis ended successfully")
+        except Exception as err:
+            self.txt.insert(END, "\nerror in video analysis")
+            self.txt.insert(END, err)
 
 
 
