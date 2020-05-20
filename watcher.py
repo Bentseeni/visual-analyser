@@ -5,10 +5,11 @@ from watchdog.observers import Observer
 
 import eventHandler
 
+
 class ImagesWatcher:
-    def __init__(self, src_path):
+    def __init__(self, src_path, iou, confidence, names):
         self.__src_path = src_path
-        self.__event_handler = eventHandler.ImagesEventHandler()
+        self.__event_handler = eventHandler.ImagesEventHandler(iou, confidence, names)
         self.__event_observer = Observer()
 
     def run(self):
@@ -30,7 +31,8 @@ class ImagesWatcher:
     def __schedule(self):
         self.__event_observer.schedule(self.__event_handler, self.__src_path, recursive=True)
 
-if __name__=="__main__":
-    #src_path = sys.argv[1] if len(sys.argv) > 1 else '.'
+
+if __name__ == "__main__":
+    # src_path = sys.argv[1] if len(sys.argv) > 1 else '.'
     src_path = r"C:\Users\Matias\PycharmProjects\Test\testfolder"
     ImagesWatcher(src_path).run()

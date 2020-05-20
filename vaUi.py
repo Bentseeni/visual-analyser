@@ -5,6 +5,7 @@ import load_weights
 import threading
 import pathlib
 import detect
+import watcher
 
 
 class UI(Frame):
@@ -12,6 +13,7 @@ class UI(Frame):
     saveLocation = os.getcwd()
     weightsLocation = "./weights/yolov3.weights"
     classesLocation = "./data/labels/coco.names"
+    isPolling = False
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
@@ -41,12 +43,12 @@ class UI(Frame):
         self.saveFileEntry.insert(0, os.getcwd())
 
         self.weightsFileEntry = Entry(self.parent, width=50)
-        self.weightsFileEntry.grid(row=2,column=0)
+        self.weightsFileEntry.grid(row=2, column=0)
         self.weightsFileEntry.insert(0, self.weightsLocation)
 
         self.classesFileEntry = Entry(self.parent, width=50)
-        self.classesFileEntry.grid(row=3,column=0)
-        self.classesFileEntry.insert(0,self.classesLocation)
+        self.classesFileEntry.grid(row=3, column=0)
+        self.classesFileEntry.insert(0, self.classesLocation)
 
         self.openButton = Button(self.parent, text="Open file", command=self.onOpen)
         self.openButton.grid(row=0, column=1)
@@ -54,20 +56,20 @@ class UI(Frame):
         self.saveButton = Button(self.parent, text="Save location", command=self.selectSaveLocation)
         self.saveButton.grid(row=1, column=1)
 
-        self.weightsFileButton = Button(self.parent,text="Weights location",command=self.selectWeights)
-        self.weightsFileButton.grid(row=2,column=1)
+        self.weightsFileButton = Button(self.parent, text="Weights location", command=self.selectWeights)
+        self.weightsFileButton.grid(row=2, column=1)
 
-        self.classesFileButton = Button(self.parent,text="Classes location", command=self.selectClasses)
-        self.classesFileButton.grid(row=3,column=1)
+        self.classesFileButton = Button(self.parent, text="Classes location", command=self.selectClasses)
+        self.classesFileButton.grid(row=3, column=1)
 
         # iou & confidence
         # select .weights & select classes .names
         self.iouEntry = Entry(self.parent, width=5)
-        self.iouEntry.grid(row=5, column=0,sticky= E)
+        self.iouEntry.grid(row=5, column=0, sticky=E)
         self.iouEntry.insert(0, "0.5")
 
         self.confidenceEntry = Entry(self.parent, width=5, text=0.5)
-        self.confidenceEntry.grid(row=6, column=0,sticky= E)
+        self.confidenceEntry.grid(row=6, column=0, sticky=E)
         self.confidenceEntry.insert(0, "0.5")
 
         self.loadWeightsButton = Button(self.parent, text="Load Weights", command=self.threadStartWeights)
@@ -76,14 +78,18 @@ class UI(Frame):
         self.analyseButton = Button(self.parent, text="Analyse", command=self.startAnalyse)
         self.analyseButton.grid(row=7, column=0)
 
+        self.pollingButton = Button(self.parent, text="Start polling", command=self.startPolling)
+        self.pollingButton.grid(row=8, column=1)
+
         self.iouLbl = Label(self.parent, text="iou")
         self.iouLbl.grid(row=5, column=1)
 
         self.confidenceLbl = Label(self.parent, text="confidence")
-        self.confidenceLbl.grid(row = 6,column=1)
+        self.confidenceLbl.grid(row=6, column=1)
 
-        self.txt = Text(self.parent,height= 10, width=35)
-        self.txt.grid(row =8,column = 0,sticky=W, pady= 5)
+        self.txt = Text(self.parent, height=10, width=35)
+        self.txt.grid(row=8, column=0, sticky=W, pady=5)
+
     # self.txt = Text(self.parent)
     # self.txt.grid(column=0,row=0)
     # self.txt.pack(fill=BOTH, expand=1)
@@ -128,8 +134,8 @@ class UI(Frame):
         self.weightsLocation = fd.askopenfilename(filetypes=ftypes)
         if self.weightsLocation == "":
             self.weightsLocation = "./weights/yolov3.weights"
-        self.weightsFileEntry.delete(0,END)
-        self.weightsFileEntry.insert(0,self.weightsLocation)
+        self.weightsFileEntry.delete(0, END)
+        self.weightsFileEntry.insert(0, self.weightsLocation)
         print(self.weightsLocation)
 
     def selectClasses(self):
@@ -137,8 +143,8 @@ class UI(Frame):
         self.classesLocation = fd.askopenfilename(filetypes=ftypes)
         if self.classesLocation == "":
             self.classesLocation = "./data/labels/coco.names"
-        self.classesFileEntry.delete(0,END)
-        self.classesFileEntry.insert(0,self.classesLocation)
+        self.classesFileEntry.delete(0, END)
+        self.classesFileEntry.insert(0, self.classesLocation)
         print(self.classesLocation)
 
     def selectSaveLocation(self):
@@ -149,6 +155,16 @@ class UI(Frame):
         self.saveFileEntry.insert(0, self.saveLocation)
         print(self.saveLocation)
 
+    def startPolling(self):
+        if self.isPolling == False:
+            self.pollingButton['text'] = "Stop polling"
+            self.pollingWatcher = watcher.ImagesWatcher(self.saveFileEntry.get(), float(self.iouEntry.get()),
+                                                        float(self.confidenceEntry.get()), self.classesLocation)
+            self.pollingWatcher.run()
+        elif self.isPolling == True:
+            self.pollingButton['text'] = "Start polling"
+            self.pollingWatcher.stop()
+
     def startAnalyse(self):
         print(self.dlg)
         # dlg_extension = os.path.splitext(self.dlg)[1]
@@ -158,8 +174,8 @@ class UI(Frame):
 
         if pathlib.Path(self.dlg[0]).suffix.lower() == ".mp4":
             print(pathlib.Path(self.dlg[0]).suffix)
-            #detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
-                        #float(self.confidenceEntry.get()))
+            # detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
+            # float(self.confidenceEntry.get()))
             analyseThreadVideo = threading.Thread(target=self.analyseVideo)
             analyseThreadVideo.start()
 
@@ -169,17 +185,17 @@ class UI(Frame):
             analyseThreadImages = threading.Thread(target=self.analyseImages)
             analyseThreadImages.start()
 
-            #detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
-             #           float(self.confidenceEntry.get()))
+            # detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
+            #           float(self.confidenceEntry.get()))
 
         # float(self.iouEntry.get())
         # float(self.confidenceEntry.get())
 
     def threadStartWeights(self):
 
-        if self.classesFileEntry.get() == "" or self.weightsFileEntry.get() == "" :
+        if self.classesFileEntry.get() == "" or self.weightsFileEntry.get() == "":
             print("no selected classes or weights")
-            self.txt.insert(END,"\nno selected classes or weights")
+            self.txt.insert(END, "\nno selected classes or weights")
 
             return
         else:
@@ -228,12 +244,11 @@ class UI(Frame):
         try:
             self.txt.insert(END, "\nStarting video analysis...")
             detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
-                    float(self.confidenceEntry.get()), namespath)
+                        float(self.confidenceEntry.get()), namespath)
             self.txt.insert(END, "\nVideo analysis ended successfully")
         except Exception as err:
             self.txt.insert(END, "\nerror in video analysis")
             self.txt.insert(END, err)
-
 
 
 def main():
