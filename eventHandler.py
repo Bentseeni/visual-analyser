@@ -127,5 +127,7 @@ def processData(threadName, q, iou, confidence, names):
         time.sleep(1)
 
 def stopThreading():
+    global exitFlag
+    exitFlag = 1
     for t in threads:
         t.join()
