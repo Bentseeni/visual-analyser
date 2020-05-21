@@ -57,11 +57,15 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
                                   size=(img.size[0] + img.size[1]) // 100)
         resize_factor = \
             (img.size[0] / model_size[0], img.size[1] / model_size[1])
+        curr_cls_number = 0
         for cls in range(len(class_names)):
             boxes = boxes_dict[cls]
             if np.size(boxes) != 0:
                 color = colors[cls]
+                number_of_obj_for_cls = 0
+                curr_cls_number += 1
                 for box in boxes:
+                    number_of_obj_for_cls += 1
                     xy, confidence = box[:4], box[4]
                     xy = [xy[i] * resize_factor[i % 2] for i in range(4)]
                     x0, y0 = xy[0], xy[1]
@@ -80,7 +84,10 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
                               font=font)
                     print('{} {:.2f}%'.format(class_names[cls],
                                               confidence * 100))
-
+                number_obj_txt = class_names[cls] + ": " + str(number_of_obj_for_cls)
+                txt_size = draw.textsize(number_obj_txt, font=font)
+                draw.text((0, curr_cls_number * txt_size[1]),
+                        number_obj_txt, fill='green', font=font)
         rgb_img = img.convert('RGB')
 
         input_name_base = os.path.basename(img_name)
@@ -103,12 +110,16 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
     boxes_dict = boxes_dicts[0]
     resize_factor = (frame_size[0] / model_size[1], frame_size[1] / model_size[0])
     colors = ((np.array(color_palette("hls", 80)) * 255)).astype(np.uint8)
+    curr_cls_number = 0
     for cls in range(len(class_names)):
         boxes = boxes_dict[cls]
         color = colors[cls]
         color = tuple([int(x) for x in color])
         if np.size(boxes) != 0:
+            number_of_obj_for_cls = 0
+            curr_cls_number += 1
             for box in boxes:
+                number_of_obj_for_cls += 1
                 xy = box[:4]
                 xy = [int(xy[i] * resize_factor[i % 2]) for i in range(4)]
                 cv2.rectangle(frame, (xy[0], xy[1]), (xy[2], xy[3]), color[::-1], 2)
@@ -120,3 +131,9 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
                               color[::-1], thickness=cv2.FILLED)
                 cv2.putText(frame, class_names[cls], (xy[0], xy[1] - baseline),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 0), 1)
+            (test_width, text_height), baseline = cv2.getTextSize(class_names[cls],
+                                                                  cv2.FONT_HERSHEY_SIMPLEX,
+                                                                  0.75, 1)
+            number_obj_txt = class_names[cls] + ": " + str(number_of_obj_for_cls)
+            cv2.putText(frame, number_obj_txt, (0, curr_cls_number*text_height),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.75, (60, 220, 0), 1)
