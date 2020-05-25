@@ -39,6 +39,7 @@ class ImagesEventHandler(PatternMatchingEventHandler):
         while file_size != os.path.getsize(event.src_path):
             file_size = os.path.getsize(event.src_path)
         print("Watchdog received created event - % s." % event.src_path)
+        #print(os.path.splitext(os.path.basename(event.src_path))[1])
         queueLock.acquire()
         workQueue.put(event.src_path)
         queueLock.release()
@@ -103,20 +104,44 @@ def processData(threadName, q, iou, confidence, names):
             data = q.get()
             queueLock.release()
             print("%s processing %s" % (threadName, data))
-            if pathlib.Path(data[0]).suffix.lower() == ".mp4":
+            fileEnd = (os.path.splitext(os.path.basename(data))[1])
+            print(fileEnd)
+            saveLoc = os.path.dirname(data)
+            saveLoc = os.path.abspath(saveLoc)
+            saveLoc = r'{}'.format(saveLoc)
+            #asd = os.path.basename(data)
+            #script_location = pathlib.Path(data).absolute().parent
+            #file_location = script_location / asd
+            data = os.path.abspath(data)
+            data = r'{}'.format(data)
+            #cwd = os.getcwd()
+            #print(cwd)
+            #saveLoc = r"C:\Users\Matias\PycharmProjects\visual-analyser\test"
+            #os.chdir(saveLoc)
+            #print(os.listdir())
+            print(saveLoc + " save location")
+            #data = pathlib.Path(data)
+            #data = r'{}'.format(os.path.realpath(data))
+            #data = os.path.realpath(data)
+            #data = r"C:\Users\Matias\PycharmProjects\visual-analyser\test\kiulu.jpg"
+            #data.replace(r"\"", "/")
+            print(data + " file location")
+
+
+            if fileEnd == ".mp4":
                 try:
                     print("Starting video analysis...")
-                    detect.main("video", data, data, iou,
+                    detect.main("video", data, saveLoc, iou,
                                 confidence, names)
                     print("Video analysis ended successfully")
                 except Exception as err:
                     print("error in video analysis")
                     print(err)
 
-            elif pathlib.Path(data[0]).suffix.lower() == ".jpg":
+            elif fileEnd == ".jpg":
                 try:
                     print("Starting Image analysis...")
-                    detect.main("images", data, data, iou,
+                    detect.main("images", data, saveLoc, iou,
                                 confidence, names)
                     print("Video analysis ended successfully")
                 except Exception as err:
