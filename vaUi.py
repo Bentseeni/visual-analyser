@@ -15,6 +15,7 @@ class UI(Frame):
     classesLocation = "./data/labels/coco.names"
     isPolling = False
 
+
     def __init__(self, parent):
         Frame.__init__(self, parent)
 
@@ -158,21 +159,34 @@ class UI(Frame):
     def startPolling(self):
         if self.isPolling == False:
             self.pollingButton['text'] = "Stop polling"
+            self.appendText("Polling started")
             self.isPolling = True
             #self.pollingWatcher = watcher.ImagesWatcher(self.saveFileEntry.get(), float(self.iouEntry.get()),
             #                                            float(self.confidenceEntry.get()), self.classesLocation)
             #self.pollingWatcher.run()
+
+
             pollingThread = threading.Thread(target=self.startPollingThread)
             pollingThread.start()
         elif self.isPolling == True:
             self.pollingButton['text'] = "Start polling"
+            self.appendText("Polling stopped")
             self.isPolling = False
             self.pollingWatcher.stop()
 
+
     def startPollingThread(self):
 
+        namespath = self.classesLocation
+        try:
+            namespathfile = open("namespath.txt")
+            namespath = namespathfile.read()
+            namespathfile.close()
+        except Exception:
+            self.txt.insert(END, "\nCouldn't read namespath.txt, using default .names")
+
         self.pollingWatcher = watcher.ImagesWatcher(self.saveFileEntry.get(), float(self.iouEntry.get()),
-                                                    float(self.confidenceEntry.get()), self.classesLocation)
+                                                    float(self.confidenceEntry.get()), namespath)
         self.pollingWatcher.run()
 
     def startAnalyse(self):
@@ -200,6 +214,8 @@ class UI(Frame):
 
         # float(self.iouEntry.get())
         # float(self.confidenceEntry.get())
+    def appendText(self, string):
+        self.txt.insert(END, "\n" + string)
 
     def threadStartWeights(self):
 
@@ -266,6 +282,7 @@ def main():
     ui = UI(root)
     root.geometry("400x450+300+300")
     root.mainloop()
+
 
 
 if __name__ == '__main__':

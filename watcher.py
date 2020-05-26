@@ -15,11 +15,12 @@ class ImagesWatcher:
 
     def run(self):
         self.start()
-        try:
-            while True:
-                time.sleep(1)
-        except KeyboardInterrupt:
-            self.stop()
+        #try:
+        #    while True:
+        #        time.sleep(1)
+        #        print("----")
+        #except KeyboardInterrupt:
+        #    self.stop()
 
     def start(self):
         self.__schedule()

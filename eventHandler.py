@@ -74,6 +74,7 @@ class myThread(threading.Thread):
 def processData(threadName, q, iou, confidence, names):
     while not exitFlag:
         queueLock.acquire()
+        print(".....")
         if not workQueue.empty():
             data = q.get()
             queueLock.release()
@@ -119,7 +120,7 @@ def stopThreading():
     exitFlag = 1
     for t in threads:
         t.join()
-
+    print(threads)
 def lowerExitFlag():
     global exitFlag
     exitFlag = 0
