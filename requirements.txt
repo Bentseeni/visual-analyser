@@ -1,5 +1,6 @@
-tensorflow==2.0
+tensorflow==2.2
 numpy
 Pillow
 opencv-python
 seaborn
+watchdog

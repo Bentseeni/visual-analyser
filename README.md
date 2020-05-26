@@ -1,4 +1,4 @@
-# Yolo v3 Object Detection with Tensorflow 2.0
+# OAMK visual-analyser UI featuring Yolo v3 Object Detection with Tensorflow 2
 Yolo v3 is an algorithm that uses deep convolutional neural networks to detect objects. <br> <br>
 
 ## Getting started
@@ -24,59 +24,33 @@ You can download the yolov3 weights by clicking [here](https://pjreddie.com/medi
 
 Add your custom weights file to weights folder and your custom .names file into data/labels folder.
 
-Change 'n_classes=80' on line 97 of load_weights.py to 'n_classes=<number of classes in .names file>'.
-
-Change './weights/yolov3.weights' on line 107 of load_weights.py to './weights/<custom weights file>'.
-
-Change './data/labels/coco.names' on line 25 of detection.py to './data/labels/<custom names files>'.
   
 ### Save the weights in Tensorflow format
-Load the weights using `load_weights.py` script. This will convert the yolov3 weights into TensorFlow .ckpt model files!
+In the program, choose the appropriate weights location and classes(.names) location on your computer, then click on "Load Weights".
 
-```
-python load_weights.py
-```
+This will convert the yolov3 weights into TensorFlow .ckpt model files!
+
 
 ## Running the model
-You can run the model using `detect.py` script. The script works on images, video or your webcam. Don't forget to set the IoU (Intersection over Union) and confidence thresholds.
+ The script works on images, or video. Don't forget to set the IoU (Intersection over Union) and confidence thresholds.
 ### Usage
-```
-python detect.py <images/video/webcam> <iou threshold> <confidence threshold> <filenames>
-```
-### Images example
-Let's run an example using sample images.
-```
-python detect.py images 0.5 0.5 data/images/dog.jpg data/images/office.jpg
-```
-Then you can find the detections in the `detections` folder.
-<br>
-You should see something like this.
-```
-detection_1.jpg
-```
-![alt text](https://github.com/heartkilla/yolo-v3/blob/master/data/detection_examples/detection_1.jpg)
-```
-detection_2.jpg
-```
-![alt text](https://github.com/heartkilla/yolo-v3/blob/master/data/detection_examples/detection_2.jpg)
-### Video example
-You can also run the script with video files.
-```
-python detect.py video 0.5 0.5 data/video/shinjuku.mp4
-```
-The detections will be saved as `detections.mp4` file.
-![alt text](https://github.com/heartkilla/yolo-v3/blob/master/data/detection_examples/detections.gif)
-### Webcam example
-The script can also be ran using your laptops webcam as the input. Example command shown below.
-```
-python detect.py webcam 0.5 0.5
-```
-The detections will be saved as 'detections.mp4' in the data/detections folder.
+Click on "Open file" to choose the video file or image file(s) you want to process. You can analyse only one video at a time, but you can run the analysis on multiple images at once.
 
+Click on "Save location" to choose the folder where the analysed files will be saved.
+
+Click on "Analyse" to start the analysis. If you want to END the analysis of a video at any time, press 'q'.
+
+The analysed file will simply have the name of the original file with '_analysed' added to the name. This means running the analysis on the same file with different settings will overwrite earlier analyses of the same file if you choose to save in the same folder.
+
+### Polling a folder
+This function allows analysis to happen automatically as image or video files are added to a folder. Analyses will be saved in the same folder.
+
+Click "Save location" to choose the folder to poll. 
+
+Click "Start polling" to start polling.
+Click "Stop polling" to stop polling.
 ## To-Do List
-* Finish migration to full TF 2.0 (remove tf.compat.v1)
-* Model training
-* Tiny Yolo Configuration
+* Finish documentation
 
 ## Acknowledgments
 * [Yolo v3 official paper](https://arxiv.org/abs/1804.02767)
@@ -84,3 +58,4 @@ The detections will be saved as 'detections.mp4' in the data/detections folder.
 * [ResNet official implementation](https://github.com/tensorflow/models/tree/master/official/resnet)
 * [DeviceHive video analysis repo](https://github.com/devicehive/devicehive-video-analysis)
 * [A Street Walk in Shinjuku, Tokyo, Japan](https://www.youtube.com/watch?v=kZ7caIK4RXI)
+* [The original Yolo v3 project this one was based on](https://github.com/theAIGuysCode/yolo-v3)
