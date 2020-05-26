@@ -1,15 +1,20 @@
 # OAMK visual-analyser UI featuring Yolo v3 Object Detection with Tensorflow 2
-Yolo v3 is an algorithm that uses deep convolutional neural networks to detect objects. <br> <br>
+Yolo v3 is an algorithm that uses deep convolutional neural networks to detect objects. <br> 
+This project uses a graphical user interface(vaUI.py) to make object detection easier to use<br>
 
 ## Getting started
 
 ### Prerequisites
-This project is written in Python 3.7 using Tensorflow 2.0 (deep learning), NumPy (numerical computing), Pillow (image processing), OpenCV (computer vision) and seaborn (visualization) packages.
+This project is written in Python 3.7 using Tensorflow 2.2 (deep learning), NumPy (numerical computing), Pillow (image processing), OpenCV (computer vision) and seaborn (visualization) packages.
 
 ```
 pip install -r requirements.txt
 ```
 
+#### Install CUDA/cuDNN
+See tensorflow GPU support guide [here](https://www.tensorflow.org/install/gpu). <br>
+For windows, scroll down to Windows setup. <br>
+NVidia's CUDA Install guide [here](https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/).
 ### Downloading official pretrained weights
 For Linux: Let's download official weights pretrained on COCO dataset. 
 
