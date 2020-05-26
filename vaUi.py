@@ -158,12 +158,22 @@ class UI(Frame):
     def startPolling(self):
         if self.isPolling == False:
             self.pollingButton['text'] = "Stop polling"
-            self.pollingWatcher = watcher.ImagesWatcher(self.saveFileEntry.get(), float(self.iouEntry.get()),
-                                                        float(self.confidenceEntry.get()), self.classesLocation)
-            self.pollingWatcher.run()
+            self.isPolling = True
+            #self.pollingWatcher = watcher.ImagesWatcher(self.saveFileEntry.get(), float(self.iouEntry.get()),
+            #                                            float(self.confidenceEntry.get()), self.classesLocation)
+            #self.pollingWatcher.run()
+            pollingThread = threading.Thread(target=self.startPollingThread)
+            pollingThread.start()
         elif self.isPolling == True:
             self.pollingButton['text'] = "Start polling"
+            self.isPolling = False
             self.pollingWatcher.stop()
+
+    def startPollingThread(self):
+
+        self.pollingWatcher = watcher.ImagesWatcher(self.saveFileEntry.get(), float(self.iouEntry.get()),
+                                                    float(self.confidenceEntry.get()), self.classesLocation)
+        self.pollingWatcher.run()
 
     def startAnalyse(self):
         print(self.dlg)

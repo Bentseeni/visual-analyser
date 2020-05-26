@@ -21,11 +21,11 @@ class ImagesEventHandler(PatternMatchingEventHandler):
     # IMAGES_REGEX = [r".*[^_thumbnail]\.jpg$"]
 
     def __init__(self, iou, confidence, names):
-        # super().__init__(self, patterns=['*.jpg'],ignore_directories=True, case_sensitive=False)
+
         self.eventIou = iou
         self.eventConfidence = confidence
         self.eventNames = names
-        PatternMatchingEventHandler.__init__(self, patterns=['*.jpg'],
+        PatternMatchingEventHandler.__init__(self, patterns=['*.jpg','*.mp4'],
                                              ignore_directories=True, case_sensitive=False)
 
         thread = myThread(threadID, "Analyse", workQueue, self.eventIou, self.eventConfidence, self.eventNames)
@@ -39,7 +39,6 @@ class ImagesEventHandler(PatternMatchingEventHandler):
         while file_size != os.path.getsize(event.src_path):
             file_size = os.path.getsize(event.src_path)
         print("Watchdog received created event - % s." % event.src_path)
-        #print(os.path.splitext(os.path.basename(event.src_path))[1])
         queueLock.acquire()
         workQueue.put(event.src_path)
         queueLock.release()
@@ -53,32 +52,7 @@ class ImagesEventHandler(PatternMatchingEventHandler):
     def on_modified(self, event):
         print("modified")
 
-    def process(self, event):
-        # filename, ext = os.path.splitext(event.src_path)
-        # filename = f"{filename}_thumbnail.jpg"
-        # image = Image.open(event.src_path)
-        # image = grayscale(image)
-        # image.thumbnail(self.THUMBNAIL_SIZE)
-        # image.save(filename)
-        if pathlib.Path(event.src_path[0]).suffix.lower() == ".mp4":
-            try:
-                print("Starting video analysis...")
-                detect.main("video", event.src_path, event.src_path, self.eventIou,
-                            self.eventConfidence, self.eventNames)
-                print("Video analysis ended successfully")
-            except Exception as err:
-                print("error in video analysis")
-                print(err)
 
-        elif pathlib.Path(event.src_path[0]).suffix.lower() == ".jpg":
-            try:
-                print("Starting Image analysis...")
-                detect.main("images", event.src_path, event.src_path, self.eventIou,
-                            self.eventConfidence, self.eventNames)
-                print("Video analysis ended successfully")
-            except Exception as err:
-                print("error in image analysis")
-                print(err)
 
 
 class myThread(threading.Thread):
@@ -112,35 +86,15 @@ def processData(threadName, q, iou, confidence, names):
             saveLoc = os.path.abspath(saveLoc)
             dataList = []
             dataList.insert(0,data)
-            #print(names)
-            #names = os.path.abspath(names)
-            #print(names)
-            #saveLoc.encode('unicode-escape').decode().replace('\\\\', '\\')
-            #asd = os.path.basename(data)
-            #script_location = pathlib.Path(data).absolute().parent
-            #file_location = script_location / asd
-            data = os.path.abspath(data)
-            dataList.insert(0, data)
-            #data.encode('unicode-escape').decode().replace('\\\\', '\\')
-            cwd = os.getcwd()
-            print(cwd)
-            #saveLoc = r"C:\Users\Matias\PycharmProjects\visual-analyser\test"
-            #os.chdir(saveLoc)
-            #print(os.listdir())
             baseName = os.path.basename(data)
             print(baseName)
-            #data = pathlib.Path(data)
-            #data = r'{}'.format(os.path.realpath(data))
-            #data = os.path.realpath(data)
-            #data = r"C:\Users\Matias\PycharmProjects\visual-analyser\test\kiulu.jpg"
-            #data.replace(r"\"", "/")
-            print(data + " file location")
+
 
 
             if fileEnd.lower() == ".mp4" and "_analysed" not in baseName:
                 try:
                     print("Starting video analysis...")
-                    detect.main("video", data, saveLoc, iou,
+                    detect.main("video", dataList, saveLoc, iou,
                                 confidence, names)
                     print("Video analysis ended successfully")
                 except Exception as err:
@@ -159,9 +113,13 @@ def processData(threadName, q, iou, confidence, names):
         else:
             queueLock.release()
         time.sleep(1)
-
+    print("EXITING ANALYSE THREAD")
 def stopThreading():
     global exitFlag
     exitFlag = 1
     for t in threads:
         t.join()
+
+def lowerExitFlag():
+    global exitFlag
+    exitFlag = 0

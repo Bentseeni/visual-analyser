@@ -8,6 +8,7 @@ import eventHandler
 
 class ImagesWatcher:
     def __init__(self, src_path, iou, confidence, names):
+        eventHandler.lowerExitFlag()
         self.__src_path = src_path
         self.__event_handler = eventHandler.ImagesEventHandler(iou, confidence, names)
         self.__event_observer = Observer()
@@ -27,6 +28,8 @@ class ImagesWatcher:
     def stop(self):
         self.__event_observer.stop()
         self.__event_observer.join()
+        print("polling stopped")
+        eventHandler.stopThreading()
 
     def __schedule(self):
         self.__event_observer.schedule(self.__event_handler, self.__src_path, recursive=True)

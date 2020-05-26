@@ -31,6 +31,8 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
     class_names = load_class_names(class_names_file)
     n_classes = len(class_names)
 
+    tf.compat.v1.reset_default_graph()
+
     model = Yolo_v3(n_classes=n_classes, model_size=_MODEL_SIZE,
                     max_output_size=_MAX_OUTPUT_SIZE,
                     iou_threshold=iou_threshold,
@@ -53,7 +55,7 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
         draw_boxes(input_names, detection_result, class_names, _MODEL_SIZE, save_folder)
 
         print('Detections have been saved successfully.')
-        tf.compat.v1.reset_default_graph()
+        #tf.compat.v1.reset_default_graph()
 
     elif type == 'video':
         inputs = tf.compat.v1.placeholder(tf.float32, [1, *_MODEL_SIZE, 3])
@@ -100,6 +102,7 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
                 cv2.destroyAllWindows()
                 cap.release()
                 print('Detections have been saved successfully.')
+        #tf.compat.v1.reset_default_graph()
 
     elif type == 'webcam':
         inputs = tf.compat.v1.placeholder(tf.float32, [1, *_MODEL_SIZE, 3])
