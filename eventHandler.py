@@ -107,19 +107,28 @@ def processData(threadName, q, iou, confidence, names):
             fileEnd = (os.path.splitext(os.path.basename(data))[1])
             print(fileEnd)
             saveLoc = os.path.dirname(data)
+            print(saveLoc)
+            saveLoc = saveLoc + "\saved"
             saveLoc = os.path.abspath(saveLoc)
-            saveLoc = r'{}'.format(saveLoc)
+            dataList = []
+            dataList.insert(0,data)
+            #print(names)
+            #names = os.path.abspath(names)
+            #print(names)
+            #saveLoc.encode('unicode-escape').decode().replace('\\\\', '\\')
             #asd = os.path.basename(data)
             #script_location = pathlib.Path(data).absolute().parent
             #file_location = script_location / asd
             data = os.path.abspath(data)
-            data = r'{}'.format(data)
-            #cwd = os.getcwd()
-            #print(cwd)
+            dataList.insert(0, data)
+            #data.encode('unicode-escape').decode().replace('\\\\', '\\')
+            cwd = os.getcwd()
+            print(cwd)
             #saveLoc = r"C:\Users\Matias\PycharmProjects\visual-analyser\test"
             #os.chdir(saveLoc)
             #print(os.listdir())
-            print(saveLoc + " save location")
+            baseName = os.path.basename(data)
+            print(baseName)
             #data = pathlib.Path(data)
             #data = r'{}'.format(os.path.realpath(data))
             #data = os.path.realpath(data)
@@ -128,24 +137,24 @@ def processData(threadName, q, iou, confidence, names):
             print(data + " file location")
 
 
-            if fileEnd == ".mp4":
+            if fileEnd.lower() == ".mp4" and "_analysed" not in baseName:
                 try:
                     print("Starting video analysis...")
                     detect.main("video", data, saveLoc, iou,
                                 confidence, names)
                     print("Video analysis ended successfully")
                 except Exception as err:
-                    print("error in video analysis")
+                    print("Error in video analysis")
                     print(err)
 
-            elif fileEnd == ".jpg":
+            elif fileEnd.lower() == ".jpg" and "_analysed" not in baseName:
                 try:
                     print("Starting Image analysis...")
-                    detect.main("images", data, saveLoc, iou,
+                    detect.main("images", dataList, saveLoc, iou,
                                 confidence, names)
-                    print("Video analysis ended successfully")
+                    print("Image analysis ended successfully")
                 except Exception as err:
-                    print("error in image analysis")
+                    print("Error in image analysis")
                     print(err)
         else:
             queueLock.release()

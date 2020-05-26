@@ -26,6 +26,7 @@ _CLASS_NAMES_FILE = './data/labels/coco.names'
 _MAX_OUTPUT_SIZE = 20
 
 
+
 def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confidence_threshold=0.5, class_names_file=_CLASS_NAMES_FILE):
     class_names = load_class_names(class_names_file)
     n_classes = len(class_names)
@@ -40,6 +41,9 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
         batch = load_images(input_names, model_size=_MODEL_SIZE)
         inputs = tf.compat.v1.placeholder(tf.float32, [batch_size, *_MODEL_SIZE, 3])
         detections = model(inputs, training=False)
+
+
+
         saver = tf.compat.v1.train.Saver(tf.compat.v1.global_variables(scope='yolo_v3_model'))
 
         with tf.compat.v1.Session() as sess:
@@ -49,6 +53,7 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
         draw_boxes(input_names, detection_result, class_names, _MODEL_SIZE, save_folder)
 
         print('Detections have been saved successfully.')
+        tf.compat.v1.reset_default_graph()
 
     elif type == 'video':
         inputs = tf.compat.v1.placeholder(tf.float32, [1, *_MODEL_SIZE, 3])
