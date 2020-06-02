@@ -7,6 +7,8 @@ import pathlib
 import detect
 import watcher
 
+import utils
+import csv
 
 class UI(Frame):
     dlg = os.getcwd()
@@ -33,6 +35,7 @@ class UI(Frame):
         fileMenu.add_command(label="Open", command=self.onOpen)
         fileMenu.add_command(label="Select weights", command=self.selectWeights)
         fileMenu.add_command(label="Select classes", command=self.selectClasses)
+        fileMenu.add_command(label="Test", command=self.classNames)
         menubar.add_cascade(label="File", menu=fileMenu)
 
         self.openFileEntry = Entry(self.parent, width=50)
@@ -147,6 +150,19 @@ class UI(Frame):
         self.classesFileEntry.delete(0, END)
         self.classesFileEntry.insert(0, self.classesLocation)
         print(self.classesLocation)
+
+    def classNames(self):
+        class_names= utils.load_class_names(self.classesFileEntry.get())
+        class_names.insert(0,"frame")
+        print(class_names)
+        filename = "test_file.csv"
+        with open(filename, 'w') as csvfile:
+            csvwriter = csv.writer(csvfile)
+            #csvwriter = csv.DictWriter(csvfile,fieldnames=class_names)
+            #csvwriter.writeheader()
+            csvfile.write("sep=,")
+            csvfile.write('\n')
+            csvwriter.writerow(class_names)
 
     def selectSaveLocation(self):
         self.saveLocation = fd.askdirectory()
