@@ -15,6 +15,7 @@ import os
 import tensorflow as tf
 import sys
 import cv2
+import csv
 
 from yolo_v3 import Yolo_v3
 from utils import load_images, load_class_names, draw_boxes, draw_frame
@@ -27,7 +28,7 @@ _MAX_OUTPUT_SIZE = 20
 
 
 
-def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confidence_threshold=0.5, class_names_file=_CLASS_NAMES_FILE):
+def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confidence_threshold=0.5, class_names_file=_CLASS_NAMES_FILE, create_csv=False):
     class_names = load_class_names(class_names_file)
     n_classes = len(class_names)
 
@@ -76,7 +77,17 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
             video_save_path = save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.mp4'
             out = cv2.VideoWriter(video_save_path, fourcc, fps,
                                   (int(frame_size[0]), int(frame_size[1])))
-
+            if create_csv:
+                csv_save_path = save_folder + '/' + os.path.splitext(input_name_base)[0] + '_statistics.csv'
+                csv_field_names = class_names[:]
+                csv_field_names.insert(0, "frame")
+                with open(csv_save_path, 'w', newline='') as csvfile:
+                    csvwriter = csv.writer(csvfile)
+                    #csvwriter = csv.DictWriter(csvfile, fieldnames=class_names)
+                    #csvwriter.writeheader()
+                    csvfile.write("sep=,")
+                    csvfile.write('\n')
+                    csvwriter.writerow(csv_field_names)
             try:
                 while True:
                     ret, frame = cap.read()
@@ -86,6 +97,20 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
                                                interpolation=cv2.INTER_NEAREST)
                     detection_result = sess.run(detections,
                                                 feed_dict={inputs: [resized_frame]})
+                    if create_csv:
+                        #csv_input_dict['frame'] = cap.get(cv2.CAP_PROP_POS_FRAMES)
+                        csv_input_dict = {"frame": cap.get(cv2.CAP_PROP_POS_FRAMES)}
+                        #csv_input_dict = {"frame": cap.get(cv2.CAP_PROP_POS_MSEC)}
+                        for cls in range(len(class_names)):
+                            number_of_obj = len(detection_result[0][cls])
+                            if number_of_obj != 0:
+                                print(class_names[cls] + str(number_of_obj))
+                                csv_input_dict[class_names[cls]] = number_of_obj
+
+                        with open(csv_save_path, 'a', newline='') as csvfile:
+                            csvwriter = csv.DictWriter(csvfile, fieldnames=csv_field_names)
+                            #csvwriter.writeheader()
+                            csvwriter.writerow(csv_input_dict)
 
                     draw_frame(frame, frame_size, detection_result,
                                class_names, _MODEL_SIZE)
