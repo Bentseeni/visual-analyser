@@ -16,6 +16,7 @@ class UI(Frame):
     saveLocation = os.getcwd()
     weightsLocation = "./weights/yolov3.weights"
     classesLocation = "./data/labels/coco.names"
+
     isPolling = False
 
     def __init__(self, parent):
@@ -23,6 +24,8 @@ class UI(Frame):
 
         self.parent = parent
         self.initUI()
+        self.weightsLocation = self.get_current_weights_path()
+        self.classesLocation = self.get_names_path()
 
     def initUI(self):
         self.parent.title("File dialog")
@@ -54,9 +57,9 @@ class UI(Frame):
         self.classesFileEntry.grid(row=3, column=0)
         self.classesFileEntry.insert(0, self.classesLocation)
 
-        self.pollingLocationEntry = Entry(self.parent, width = 50)
-        self.pollingLocationEntry.grid(row= 10, column=0,pady=10)
-        self.pollingLocationEntry.insert(0,os.getcwd())
+        self.pollingLocationEntry = Entry(self.parent, width=50)
+        self.pollingLocationEntry.grid(row=10, column=0, pady=10)
+        self.pollingLocationEntry.insert(0, os.getcwd())
 
         self.openButton = Button(self.parent, text="Open file", command=self.onOpen)
         self.openButton.grid(row=0, column=1)
@@ -70,8 +73,8 @@ class UI(Frame):
         self.classesFileButton = Button(self.parent, text="Classes location", command=self.selectClasses)
         self.classesFileButton.grid(row=3, column=1)
 
-        self.pollingLocationButton = Button(self.parent,text="Polling location", command=self.selectPollingLocation)
-        self.pollingLocationButton.grid(row=10,column=1)
+        self.pollingLocationButton = Button(self.parent, text="Polling location", command=self.selectPollingLocation)
+        self.pollingLocationButton.grid(row=10, column=1)
         # iou & confidence
         # select .weights & select classes .names
         self.iouEntry = Entry(self.parent, width=5)
@@ -85,11 +88,18 @@ class UI(Frame):
         self.loadWeightsButton = Button(self.parent, text="Load Weights", command=self.threadStartWeights)
         self.loadWeightsButton.grid(row=4, column=0)
 
-        self.analyseButton = Button(self.parent, text="Analyse", command=self.startAnalyse, bg='#32a62e',height=3,width=20)
+        self.analyseButton = Button(self.parent, text="Analyse", command=self.startAnalyse, bg='#32a62e', height=3,
+                                    width=20)
         self.analyseButton.grid(row=8, column=0)
 
         self.pollingButton = Button(self.parent, text="Start polling", command=self.startPolling)
         self.pollingButton.grid(row=11, column=0)
+
+        self.weightsLabel = Label(self.parent, text=os.path.basename(self.weightsLocation))
+        self.weightsLabel.grid(row=2, column=3)
+
+        self.classesLabel = Label(self.parent, text=os.path.basename(self.classesLocation))
+        self.classesLabel.grid(row=3, column=3)
 
         self.iouLbl = Label(self.parent, text="iou")
         self.iouLbl.grid(row=5, column=1)
@@ -151,6 +161,7 @@ class UI(Frame):
             self.weightsLocation = "./weights/yolov3.weights"
         self.weightsFileEntry.delete(0, END)
         self.weightsFileEntry.insert(0, self.weightsLocation)
+        self.weightsLabel['text'] = os.path.basename(self.weightsLocation)
         print(self.weightsLocation)
 
     def selectClasses(self):
@@ -160,6 +171,7 @@ class UI(Frame):
             self.classesLocation = "./data/labels/coco.names"
         self.classesFileEntry.delete(0, END)
         self.classesFileEntry.insert(0, self.classesLocation)
+        self.classesLabel['text'] = os.path.basename(self.classesLocation)
         print(self.classesLocation)
 
     def classNames(self):
@@ -195,7 +207,7 @@ class UI(Frame):
     def startPolling(self):
         if self.isPolling == False:
             self.pollingButton['text'] = "Stop polling"
-            self.appendText("Polling started")
+            self.appendText("Polling started in location:\n" + self.pollingLocationEntry.get())
             self.isPolling = True
             # self.pollingWatcher = watcher.ImagesWatcher(self.saveFileEntry.get(), float(self.iouEntry.get()),
             #                                            float(self.confidenceEntry.get()), self.classesLocation)
@@ -321,10 +333,11 @@ class UI(Frame):
         finally:
             return current_weights_path
 
+
 def main():
     root = Tk()
     ui = UI(root)
-    root.geometry("420x500+300+300")
+    root.geometry("500x500+300+300")
     root.mainloop()
 
 
