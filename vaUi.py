@@ -54,6 +54,10 @@ class UI(Frame):
         self.classesFileEntry.grid(row=3, column=0)
         self.classesFileEntry.insert(0, self.classesLocation)
 
+        self.pollingLocationEntry = Entry(self.parent, width = 50)
+        self.pollingLocationEntry.grid(row= 10, column=0,pady=10)
+        self.pollingLocationEntry.insert(0,os.getcwd())
+
         self.openButton = Button(self.parent, text="Open file", command=self.onOpen)
         self.openButton.grid(row=0, column=1)
 
@@ -66,6 +70,8 @@ class UI(Frame):
         self.classesFileButton = Button(self.parent, text="Classes location", command=self.selectClasses)
         self.classesFileButton.grid(row=3, column=1)
 
+        self.pollingLocationButton = Button(self.parent,text="Polling location", command=self.selectPollingLocation)
+        self.pollingLocationButton.grid(row=10,column=1)
         # iou & confidence
         # select .weights & select classes .names
         self.iouEntry = Entry(self.parent, width=5)
@@ -79,11 +85,11 @@ class UI(Frame):
         self.loadWeightsButton = Button(self.parent, text="Load Weights", command=self.threadStartWeights)
         self.loadWeightsButton.grid(row=4, column=0)
 
-        self.analyseButton = Button(self.parent, text="Analyse", command=self.startAnalyse)
+        self.analyseButton = Button(self.parent, text="Analyse", command=self.startAnalyse, bg='#32a62e',height=3,width=20)
         self.analyseButton.grid(row=8, column=0)
 
         self.pollingButton = Button(self.parent, text="Start polling", command=self.startPolling)
-        self.pollingButton.grid(row=9, column=1)
+        self.pollingButton.grid(row=11, column=0)
 
         self.iouLbl = Label(self.parent, text="iou")
         self.iouLbl.grid(row=5, column=1)
@@ -178,6 +184,14 @@ class UI(Frame):
         self.saveFileEntry.insert(0, self.saveLocation)
         print(self.saveLocation)
 
+    def selectPollingLocation(self):
+        self.pollingLocation = fd.askdirectory()
+        if self.pollingLocation == "":
+            self.pollingLocation = os.getcwd()
+        self.pollingLocationEntry.delete(0, END)
+        self.pollingLocationEntry.insert(0, self.pollingLocation)
+        print(self.saveLocation)
+
     def startPolling(self):
         if self.isPolling == False:
             self.pollingButton['text'] = "Stop polling"
@@ -205,7 +219,7 @@ class UI(Frame):
         except Exception:
             self.txt.insert(END, "\nCouldn't read namespath.txt, using default .names")
 
-        self.pollingWatcher = watcher.ImagesWatcher(self.saveFileEntry.get(), float(self.iouEntry.get()),
+        self.pollingWatcher = watcher.ImagesWatcher(self.pollingLocationEntry.get(), float(self.iouEntry.get()),
                                                     float(self.confidenceEntry.get()), namespath, self.createCsv.get())
         self.pollingWatcher.run()
 
@@ -300,7 +314,7 @@ class UI(Frame):
 def main():
     root = Tk()
     ui = UI(root)
-    root.geometry("400x450+300+300")
+    root.geometry("420x500+300+300")
     root.mainloop()
 
 
