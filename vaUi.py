@@ -316,8 +316,8 @@ class UI(Frame):
             current_weights_path = current_weights_file.read()
             current_weights_file.close()
         except Exception:
-            self.txt.insert(END, "\nCouldn't read namespath.txt, using default .names")
-            current_weights_path = self.classesLocation
+            self.txt.insert(END, "\nCouldn't read currentweights.txt")
+            current_weights_path = "default/unknown"
         finally:
             return current_weights_path
 
