@@ -266,23 +266,19 @@ class UI(Frame):
         try:
             self.txt.insert(END, "\nLoading weights...")
             load_weights.main(weights_file=self.weightsFileEntry.get(), class_names_file=self.classesFileEntry.get())
-            namespathfile = open("namespath.txt", "w")
-            namespathfile.write(self.classesFileEntry.get())
-            namespathfile.close()
+            names_path_file = open("namespath.txt", "w")
+            names_path_file.write(self.classesFileEntry.get())
+            names_path_file.close()
+            weights_path_file = open("currentweights.txt", "w")
+            weights_path_file.write(self.weightsFileEntry.get())
+            weights_path_file.close()
             self.txt.insert(END, "\nWeights loaded")
         except Exception as err:
             self.txt.insert(END, "\nerror loading weights")
             self.txt.insert(END, err)
 
     def analyseImages(self):
-        namespath = self.classesLocation
-        try:
-            namespathfile = open("namespath.txt")
-            namespath = namespathfile.read()
-            namespathfile.close()
-        except Exception:
-            self.txt.insert(END, "\nCouldn't read namespath.txt, using default .names")
-
+        namespath = self.get_names_path()
         try:
             self.txt.insert(END, "\nStarting image analysis...")
             detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
@@ -293,23 +289,37 @@ class UI(Frame):
             self.txt.insert(END, err)
 
     def analyseVideo(self):
-        namespath = self.classesLocation
-        try:
-            namespathfile = open("namespath.txt")
-            namespath = namespathfile.read()
-            namespathfile.close()
-        except Exception:
-            self.txt.insert(END, "\nCouldn't read namespath.txt, using default .names")
-
+        namespath = self.get_names_path()
         try:
             self.txt.insert(END, "\nStarting video analysis...")
             detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
-                        float(self.confidenceEntry.get()), namespath,self.createCsv.get())
+                        float(self.confidenceEntry.get()), namespath, self.createCsv.get())
             self.txt.insert(END, "\nVideo analysis ended successfully")
         except Exception as err:
             self.txt.insert(END, "\nerror in video analysis")
             self.txt.insert(END, err)
 
+    def get_names_path(self):
+        try:
+            names_path_file = open("namespath.txt")
+            names_path = names_path_file.read()
+            names_path_file.close()
+        except Exception:
+            self.txt.insert(END, "\nCouldn't read namespath.txt, using default .names")
+            names_path = self.classesLocation
+        finally:
+            return names_path
+
+    def get_current_weights_path(self):
+        try:
+            current_weights_file = open("currentweights.txt")
+            current_weights_path = current_weights_file.read()
+            current_weights_file.close()
+        except Exception:
+            self.txt.insert(END, "\nCouldn't read namespath.txt, using default .names")
+            current_weights_path = self.classesLocation
+        finally:
+            return current_weights_path
 
 def main():
     root = Tk()
