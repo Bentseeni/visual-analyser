@@ -7,19 +7,19 @@ import eventHandler
 
 
 class ImagesWatcher:
-    def __init__(self, src_path, iou, confidence, names):
+    def __init__(self, src_path, iou, confidence, names, createCsv):
         eventHandler.lowerExitFlag()
         self.__src_path = src_path
-        self.__event_handler = eventHandler.ImagesEventHandler(iou, confidence, names)
+        self.__event_handler = eventHandler.ImagesEventHandler(iou, confidence, names, createCsv)
         self.__event_observer = Observer()
 
     def run(self):
         self.start()
-        #try:
+        # try:
         #    while True:
         #        time.sleep(1)
         #        print("----")
-        #except KeyboardInterrupt:
+        # except KeyboardInterrupt:
         #    self.stop()
 
     def start(self):

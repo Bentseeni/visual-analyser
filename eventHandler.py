@@ -20,18 +20,18 @@ class ImagesEventHandler(PatternMatchingEventHandler):
     # THUMBNAIL_SIZE = (128,128)
     # IMAGES_REGEX = [r".*[^_thumbnail]\.jpg$"]
 
-    def __init__(self, iou, confidence, names):
-
+    def __init__(self, iou, confidence, names, createCsv):
         self.eventIou = iou
         self.eventConfidence = confidence
         self.eventNames = names
-        PatternMatchingEventHandler.__init__(self, patterns=['*.jpg','*.mp4'],
+        self.eventCreateCsv = createCsv
+        PatternMatchingEventHandler.__init__(self, patterns=['*.jpg', '*.mp4'],
                                              ignore_directories=True, case_sensitive=False)
 
-        thread = myThread(threadID, "Analyse", workQueue, self.eventIou, self.eventConfidence, self.eventNames)
+        thread = myThread(threadID, "Analyse", workQueue, self.eventIou, self.eventConfidence, self.eventNames,
+                          self.eventCreateCsv)
         thread.start()
         threads.append(thread)
-
 
     def on_created(self, event):
         # self.process(event)
@@ -53,10 +53,8 @@ class ImagesEventHandler(PatternMatchingEventHandler):
         print("modified")
 
 
-
-
 class myThread(threading.Thread):
-    def __init__(self, threadID, name, q, iou, confidence, names):
+    def __init__(self, threadID, name, q, iou, confidence, names, createCsv):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
@@ -64,14 +62,15 @@ class myThread(threading.Thread):
         self.iou = iou
         self.confidence = confidence
         self.names = names
+        self.createCsv = createCsv
 
     def run(self):
         print("Starting " + self.name)
-        processData(self.name, self.q, self.iou, self.confidence, self.names)
+        processData(self.name, self.q, self.iou, self.confidence, self.names, self.createCsv)
         print("Exiting " + self.name)
 
 
-def processData(threadName, q, iou, confidence, names):
+def processData(threadName, q, iou, confidence, names, createCsv):
     while not exitFlag:
         queueLock.acquire()
         print(".....")
@@ -83,20 +82,24 @@ def processData(threadName, q, iou, confidence, names):
             print(fileEnd)
             saveLoc = os.path.dirname(data)
             print(saveLoc)
+
             saveLoc = saveLoc + "\saved"
             saveLoc = os.path.abspath(saveLoc)
+
             dataList = []
-            dataList.insert(0,data)
+            dataList.insert(0, data)
             baseName = os.path.basename(data)
             print(baseName)
 
-
-
             if fileEnd.lower() == ".mp4" and "_analysed" not in baseName:
+                try:
+                    os.mkdir(saveLoc)
+                except OSError as error:
+                    print(error)
                 try:
                     print("Starting video analysis...")
                     detect.main("video", dataList, saveLoc, iou,
-                                confidence, names)
+                                confidence, names, createCsv)
                     print("Video analysis ended successfully")
                 except Exception as err:
                     print("Error in video analysis")
@@ -104,9 +107,13 @@ def processData(threadName, q, iou, confidence, names):
 
             elif fileEnd.lower() == ".jpg" and "_analysed" not in baseName:
                 try:
+                    os.mkdir(saveLoc)
+                except OSError as error:
+                    print(error)
+                try:
                     print("Starting Image analysis...")
                     detect.main("images", dataList, saveLoc, iou,
-                                confidence, names)
+                                confidence, names, createCsv)
                     print("Image analysis ended successfully")
                 except Exception as err:
                     print("Error in image analysis")
@@ -115,12 +122,16 @@ def processData(threadName, q, iou, confidence, names):
             queueLock.release()
         time.sleep(1)
     print("EXITING ANALYSE THREAD")
+
+
 def stopThreading():
     global exitFlag
     exitFlag = 1
     for t in threads:
         t.join()
     print(threads)
+
+
 def lowerExitFlag():
     global exitFlag
     exitFlag = 0

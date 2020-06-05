@@ -10,13 +10,13 @@ import watcher
 import utils
 import csv
 
+
 class UI(Frame):
     dlg = os.getcwd()
     saveLocation = os.getcwd()
     weightsLocation = "./weights/yolov3.weights"
     classesLocation = "./data/labels/coco.names"
     isPolling = False
-
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
@@ -95,8 +95,9 @@ class UI(Frame):
         self.txt.grid(row=9, column=0, sticky=W, pady=5)
 
         self.createCsv = BooleanVar()
-        self.csvCheckButton = Checkbutton(self.parent,text="Create CSV",variable= self.createCsv,onvalue=True ,offvalue=False)
-        self.csvCheckButton.grid(row=7, column=0, columnspan=2,sticky=E,padx=30)
+        self.csvCheckButton = Checkbutton(self.parent, text="Create CSV", variable=self.createCsv, onvalue=True,
+                                          offvalue=False)
+        self.csvCheckButton.grid(row=7, column=0, columnspan=2, sticky=E, padx=30)
 
     # self.txt = Text(self.parent)
     # self.txt.grid(column=0,row=0)
@@ -156,15 +157,15 @@ class UI(Frame):
         print(self.classesLocation)
 
     def classNames(self):
-        class_names= utils.load_class_names(self.classesFileEntry.get())
-        class_names.insert(0,"frame")
+        class_names = utils.load_class_names(self.classesFileEntry.get())
+        class_names.insert(0, "frame")
         print(class_names)
         filename = "test_file.csv"
         print(self.createCsv.get())
         with open(filename, 'w') as csvfile:
             csvwriter = csv.writer(csvfile)
-            #csvwriter = csv.DictWriter(csvfile,fieldnames=class_names)
-            #csvwriter.writeheader()
+            # csvwriter = csv.DictWriter(csvfile,fieldnames=class_names)
+            # csvwriter.writeheader()
             csvfile.write("sep=,")
             csvfile.write('\n')
             csvwriter.writerow(class_names)
@@ -182,10 +183,9 @@ class UI(Frame):
             self.pollingButton['text'] = "Stop polling"
             self.appendText("Polling started")
             self.isPolling = True
-            #self.pollingWatcher = watcher.ImagesWatcher(self.saveFileEntry.get(), float(self.iouEntry.get()),
+            # self.pollingWatcher = watcher.ImagesWatcher(self.saveFileEntry.get(), float(self.iouEntry.get()),
             #                                            float(self.confidenceEntry.get()), self.classesLocation)
-            #self.pollingWatcher.run()
-
+            # self.pollingWatcher.run()
 
             pollingThread = threading.Thread(target=self.startPollingThread)
             pollingThread.start()
@@ -194,7 +194,6 @@ class UI(Frame):
             self.appendText("Polling stopped")
             self.isPolling = False
             self.pollingWatcher.stop()
-
 
     def startPollingThread(self):
 
@@ -207,7 +206,7 @@ class UI(Frame):
             self.txt.insert(END, "\nCouldn't read namespath.txt, using default .names")
 
         self.pollingWatcher = watcher.ImagesWatcher(self.saveFileEntry.get(), float(self.iouEntry.get()),
-                                                    float(self.confidenceEntry.get()), namespath)
+                                                    float(self.confidenceEntry.get()), namespath, self.createCsv.get())
         self.pollingWatcher.run()
 
     def startAnalyse(self):
@@ -224,7 +223,6 @@ class UI(Frame):
             analyseThreadVideo = threading.Thread(target=self.analyseVideo)
             analyseThreadVideo.start()
 
-
         elif pathlib.Path(self.dlg[0]).suffix.lower() == ".jpg":
             print(pathlib.Path(self.dlg[0]).suffix)
             analyseThreadImages = threading.Thread(target=self.analyseImages)
@@ -235,6 +233,7 @@ class UI(Frame):
 
         # float(self.iouEntry.get())
         # float(self.confidenceEntry.get())
+
     def appendText(self, string):
         self.txt.insert(END, "\n" + string)
 
@@ -291,7 +290,7 @@ class UI(Frame):
         try:
             self.txt.insert(END, "\nStarting video analysis...")
             detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
-                        float(self.confidenceEntry.get()), namespath)
+                        float(self.confidenceEntry.get()), namespath,self.createCsv.get())
             self.txt.insert(END, "\nVideo analysis ended successfully")
         except Exception as err:
             self.txt.insert(END, "\nerror in video analysis")
@@ -303,7 +302,6 @@ def main():
     ui = UI(root)
     root.geometry("400x450+300+300")
     root.mainloop()
-
 
 
 if __name__ == '__main__':
