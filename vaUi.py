@@ -161,7 +161,6 @@ class UI(Frame):
             self.weightsLocation = "./weights/yolov3.weights"
         self.weightsFileEntry.delete(0, END)
         self.weightsFileEntry.insert(0, self.weightsLocation)
-        self.weightsLabel['text'] = os.path.basename(self.weightsLocation)
         print(self.weightsLocation)
 
     def selectClasses(self):
@@ -171,7 +170,6 @@ class UI(Frame):
             self.classesLocation = "./data/labels/coco.names"
         self.classesFileEntry.delete(0, END)
         self.classesFileEntry.insert(0, self.classesLocation)
-        self.classesLabel['text'] = os.path.basename(self.classesLocation)
         print(self.classesLocation)
 
     def classNames(self):
@@ -285,6 +283,8 @@ class UI(Frame):
             weights_path_file.write(self.weightsFileEntry.get())
             weights_path_file.close()
             self.txt.insert(END, "\nWeights loaded")
+            self.weightsLabel['text'] = os.path.basename(self.weightsFileEntry.get())
+            self.classesLabel['text'] = os.path.basename(self.classesFileEntry.get())
         except Exception as err:
             self.txt.insert(END, "\nerror loading weights")
             self.txt.insert(END, err)
