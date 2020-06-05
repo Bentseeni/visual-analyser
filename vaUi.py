@@ -103,10 +103,10 @@ class UI(Frame):
         self.classesLocation = self.get_names_path()
 
         self.weightsLabel = Label(self.parent, text=os.path.basename(self.weightsLocation))
-        self.weightsLabel.grid(row=2, column=3)
+        self.weightsLabel.grid(row=5, column=0)
 
         self.classesLabel = Label(self.parent, text=os.path.basename(self.classesLocation))
-        self.classesLabel.grid(row=3, column=3)
+        self.classesLabel.grid(row=6, column=0)
 
         self.iouLbl = Label(self.parent, text="iou")
         self.iouLbl.grid(row=5, column=1)
@@ -343,7 +343,7 @@ class UI(Frame):
 def main():
     root = Tk()
     ui = UI(root)
-    root.geometry("500x500+300+300")
+    root.geometry("420x500+300+300")
     root.mainloop()
 
 
