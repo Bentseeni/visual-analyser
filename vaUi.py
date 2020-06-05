@@ -80,10 +80,10 @@ class UI(Frame):
         self.loadWeightsButton.grid(row=4, column=0)
 
         self.analyseButton = Button(self.parent, text="Analyse", command=self.startAnalyse)
-        self.analyseButton.grid(row=7, column=0)
+        self.analyseButton.grid(row=8, column=0)
 
         self.pollingButton = Button(self.parent, text="Start polling", command=self.startPolling)
-        self.pollingButton.grid(row=8, column=1)
+        self.pollingButton.grid(row=9, column=1)
 
         self.iouLbl = Label(self.parent, text="iou")
         self.iouLbl.grid(row=5, column=1)
@@ -92,7 +92,11 @@ class UI(Frame):
         self.confidenceLbl.grid(row=6, column=1)
 
         self.txt = Text(self.parent, height=10, width=35)
-        self.txt.grid(row=8, column=0, sticky=W, pady=5)
+        self.txt.grid(row=9, column=0, sticky=W, pady=5)
+
+        self.createCsv = BooleanVar()
+        self.csvCheckButton = Checkbutton(self.parent,text="Create CSV",variable= self.createCsv,onvalue=True ,offvalue=False)
+        self.csvCheckButton.grid(row=7, column=0, columnspan=2,sticky=E,padx=30)
 
     # self.txt = Text(self.parent)
     # self.txt.grid(column=0,row=0)
@@ -156,6 +160,7 @@ class UI(Frame):
         class_names.insert(0,"frame")
         print(class_names)
         filename = "test_file.csv"
+        print(self.createCsv.get())
         with open(filename, 'w') as csvfile:
             csvwriter = csv.writer(csvfile)
             #csvwriter = csv.DictWriter(csvfile,fieldnames=class_names)
