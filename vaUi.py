@@ -24,8 +24,7 @@ class UI(Frame):
 
         self.parent = parent
         self.initUI()
-        self.weightsLocation = self.get_current_weights_path()
-        self.classesLocation = self.get_names_path()
+
 
     def initUI(self):
         self.parent.title("File dialog")
@@ -40,6 +39,8 @@ class UI(Frame):
         fileMenu.add_command(label="Select classes", command=self.selectClasses)
         fileMenu.add_command(label="Test", command=self.classNames)
         menubar.add_cascade(label="File", menu=fileMenu)
+
+
 
         self.openFileEntry = Entry(self.parent, width=50)
         self.openFileEntry.grid(row=0, column=0)
@@ -95,6 +96,12 @@ class UI(Frame):
         self.pollingButton = Button(self.parent, text="Start polling", command=self.startPolling)
         self.pollingButton.grid(row=11, column=0)
 
+        self.txt = Text(self.parent, height=10, width=35)
+        self.txt.grid(row=9, column=0, sticky=W, pady=5)
+
+        self.weightsLocation = self.get_current_weights_path()
+        self.classesLocation = self.get_names_path()
+
         self.weightsLabel = Label(self.parent, text=os.path.basename(self.weightsLocation))
         self.weightsLabel.grid(row=2, column=3)
 
@@ -107,8 +114,7 @@ class UI(Frame):
         self.confidenceLbl = Label(self.parent, text="confidence")
         self.confidenceLbl.grid(row=6, column=1)
 
-        self.txt = Text(self.parent, height=10, width=35)
-        self.txt.grid(row=9, column=0, sticky=W, pady=5)
+
 
         self.createCsv = BooleanVar()
         self.csvCheckButton = Checkbutton(self.parent, text="Create CSV", variable=self.createCsv, onvalue=True,
