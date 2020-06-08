@@ -23,24 +23,21 @@ class UI(Frame):
         Frame.__init__(self, parent)
 
         self.parent = parent
-        self.initUI()
+        self.init_ui()
 
-
-    def initUI(self):
+    def init_ui(self):
         self.parent.title("File dialog")
         # self.pack(fill=BOTH, expand=1)
 
         menubar = Menu(self.parent)
         self.parent.config(menu=menubar)
 
-        fileMenu = Menu(menubar)
-        fileMenu.add_command(label="Open", command=self.onOpen)
-        fileMenu.add_command(label="Select weights", command=self.selectWeights)
-        fileMenu.add_command(label="Select classes", command=self.selectClasses)
-        fileMenu.add_command(label="Test", command=self.classNames)
-        menubar.add_cascade(label="File", menu=fileMenu)
-
-
+        file_menu = Menu(menubar)
+        file_menu.add_command(label="Open", command=self.on_open)
+        file_menu.add_command(label="Select weights", command=self.select_weights)
+        file_menu.add_command(label="Select classes", command=self.select_classes)
+        file_menu.add_command(label="Test", command=self.class_names)
+        menubar.add_cascade(label="File", menu=file_menu)
 
         self.openFileEntry = Entry(self.parent, width=50)
         self.openFileEntry.grid(row=0, column=0)
@@ -62,22 +59,21 @@ class UI(Frame):
         self.pollingLocationEntry.grid(row=10, column=0, pady=10)
         self.pollingLocationEntry.insert(0, os.getcwd())
 
-        self.openButton = Button(self.parent, text="Open file", command=self.onOpen)
+        self.openButton = Button(self.parent, text="Open file", command=self.on_open)
         self.openButton.grid(row=0, column=1)
 
-        self.saveButton = Button(self.parent, text="Save location", command=self.selectSaveLocation)
+        self.saveButton = Button(self.parent, text="Save location", command=self.select_save_location)
         self.saveButton.grid(row=1, column=1)
 
-        self.weightsFileButton = Button(self.parent, text="Weights location", command=self.selectWeights)
+        self.weightsFileButton = Button(self.parent, text="Weights location", command=self.select_weights)
         self.weightsFileButton.grid(row=2, column=1)
 
-        self.classesFileButton = Button(self.parent, text="Classes location", command=self.selectClasses)
+        self.classesFileButton = Button(self.parent, text="Classes location", command=self.select_classes)
         self.classesFileButton.grid(row=3, column=1)
 
-        self.pollingLocationButton = Button(self.parent, text="Polling location", command=self.selectPollingLocation)
+        self.pollingLocationButton = Button(self.parent, text="Polling location", command=self.select_polling_location)
         self.pollingLocationButton.grid(row=10, column=1)
-        # iou & confidence
-        # select .weights & select classes .names
+
         self.iouEntry = Entry(self.parent, width=5)
         self.iouEntry.grid(row=5, column=0, sticky=E)
         self.iouEntry.insert(0, "0.5")
@@ -86,14 +82,14 @@ class UI(Frame):
         self.confidenceEntry.grid(row=6, column=0, sticky=E)
         self.confidenceEntry.insert(0, "0.5")
 
-        self.loadWeightsButton = Button(self.parent, text="Load Weights", command=self.threadStartWeights)
+        self.loadWeightsButton = Button(self.parent, text="Load Weights", command=self.thread_start_weights)
         self.loadWeightsButton.grid(row=4, column=0)
 
-        self.analyseButton = Button(self.parent, text="Analyse", command=self.startAnalyse, bg='#32a62e', height=3,
+        self.analyseButton = Button(self.parent, text="Analyse", command=self.start_analyse, bg='#32a62e', height=3,
                                     width=20)
         self.analyseButton.grid(row=8, column=0)
 
-        self.pollingButton = Button(self.parent, text="Start polling", command=self.startPolling)
+        self.pollingButton = Button(self.parent, text="Start polling", command=self.start_polling)
         self.pollingButton.grid(row=11, column=0)
 
         self.txt = Text(self.parent, height=10, width=35)
@@ -114,53 +110,27 @@ class UI(Frame):
         self.confidenceLbl = Label(self.parent, text="confidence")
         self.confidenceLbl.grid(row=6, column=1)
 
-
-
         self.createCsv = BooleanVar()
         self.csvCheckButton = Checkbutton(self.parent, text="Create CSV", variable=self.createCsv, onvalue=True,
                                           offvalue=False)
         self.csvCheckButton.grid(row=7, column=0, columnspan=2, sticky=E, padx=30)
 
-    # self.txt = Text(self.parent)
-    # self.txt.grid(column=0,row=0)
-    # self.txt.pack(fill=BOTH, expand=1)
-
-    # self.lbl = Label(self, text="asd").grid(row=1,column=0)
-    # self.lbl.grid(column=1,row=0)
-    # self.lbl.pack(fill=BOTH, expand=1)
-
-    def onOpen(self):
+    def on_open(self):
         ftypes = [('Video', '*.mp4'), ('Images', '*.jpg')]
-        # dlg = tkFileDialog.Open(self, filetypes = ftypes)
         self.dlg = fd.askopenfilenames(filetypes=ftypes)
-        # fl = dlg.show()
         print(self.dlg)
         if self.dlg == "":
             self.dlg = os.getcwd()
 
-        # if type(self.dlg) is not tuple:
-        #    print(pathlib.Path(self.dlg).suffix)
-
-        # if self.dlg == '':
-        #   self.dlg = os.getcwd()
-        #    print(self.dlg)
-        # self.txt.insert(END, dlg)
-        # self.lbl['text'] = dlg
         self.openFileEntry.delete(0, END)
         self.openFileEntry.insert(0, self.dlg)
 
-    # if dlg != '':
-    # dlg = os.getcwd()
-    # text = self.readFile(dlg)
-    #  print(text)
-    # self.txt.insert(END, dlg)
-
-    def readFile(self, filename):
+    def read_file(self, filename):
         f = open(filename, "r")
         text = f.read()
         return text
 
-    def selectWeights(self):
+    def select_weights(self):
         ftypes = [('Weights', '*.weights')]
         self.weightsLocation = fd.askopenfilename(filetypes=ftypes)
         if self.weightsLocation == "":
@@ -169,7 +139,7 @@ class UI(Frame):
         self.weightsFileEntry.insert(0, self.weightsLocation)
         print(self.weightsLocation)
 
-    def selectClasses(self):
+    def select_classes(self):
         ftypes = [('Classes', '*.names')]
         self.classesLocation = fd.askopenfilename(filetypes=ftypes)
         if self.classesLocation == "":
@@ -178,7 +148,7 @@ class UI(Frame):
         self.classesFileEntry.insert(0, self.classesLocation)
         print(self.classesLocation)
 
-    def classNames(self):
+    def class_names(self):
         class_names = utils.load_class_names(self.classesFileEntry.get())
         class_names.insert(0, "frame")
         print(class_names)
@@ -186,13 +156,11 @@ class UI(Frame):
         print(self.createCsv.get())
         with open(filename, 'w') as csvfile:
             csvwriter = csv.writer(csvfile)
-            # csvwriter = csv.DictWriter(csvfile,fieldnames=class_names)
-            # csvwriter.writeheader()
             csvfile.write("sep=,")
             csvfile.write('\n')
             csvwriter.writerow(class_names)
 
-    def selectSaveLocation(self):
+    def select_save_location(self):
         self.saveLocation = fd.askdirectory()
         if self.saveLocation == "":
             self.saveLocation = os.getcwd()
@@ -200,7 +168,7 @@ class UI(Frame):
         self.saveFileEntry.insert(0, self.saveLocation)
         print(self.saveLocation)
 
-    def selectPollingLocation(self):
+    def select_polling_location(self):
         self.pollingLocation = fd.askdirectory()
         if self.pollingLocation == "":
             self.pollingLocation = os.getcwd()
@@ -208,24 +176,20 @@ class UI(Frame):
         self.pollingLocationEntry.insert(0, self.pollingLocation)
         print(self.saveLocation)
 
-    def startPolling(self):
-        if self.isPolling == False:
+    def start_polling(self):
+        if not self.isPolling:
             self.pollingButton['text'] = "Stop polling"
-            self.appendText("Polling started in location:\n" + self.pollingLocationEntry.get())
+            self.append_text("Polling started in location:\n" + self.pollingLocationEntry.get())
             self.isPolling = True
-            # self.pollingWatcher = watcher.ImagesWatcher(self.saveFileEntry.get(), float(self.iouEntry.get()),
-            #                                            float(self.confidenceEntry.get()), self.classesLocation)
-            # self.pollingWatcher.run()
-
-            pollingThread = threading.Thread(target=self.startPollingThread)
-            pollingThread.start()
-        elif self.isPolling == True:
+            polling_thread = threading.Thread(target=self.start_polling_thread)
+            polling_thread.start()
+        elif self.isPolling:
             self.pollingButton['text'] = "Start polling"
-            self.appendText("Polling stopped")
+            self.append_text("Polling stopped")
             self.isPolling = False
             self.pollingWatcher.stop()
 
-    def startPollingThread(self):
+    def start_polling_thread(self):
 
         namespath = self.classesLocation
         try:
@@ -239,35 +203,23 @@ class UI(Frame):
                                                     float(self.confidenceEntry.get()), namespath, self.createCsv.get())
         self.pollingWatcher.run()
 
-    def startAnalyse(self):
+    def start_analyse(self):
         print(self.dlg)
-        # dlg_extension = os.path.splitext(self.dlg)[1]
-        # print(dlg_extension)
-        # if pathlib.Path(self.dlg).suffix == '.jpg':
-        #    print(pathlib.Path(self.dlg).suffix)
 
         if pathlib.Path(self.dlg[0]).suffix.lower() == ".mp4":
             print(pathlib.Path(self.dlg[0]).suffix)
-            # detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
-            # float(self.confidenceEntry.get()))
-            analyseThreadVideo = threading.Thread(target=self.analyseVideo)
-            analyseThreadVideo.start()
+            analyse_thread_video = threading.Thread(target=self.analyse_video)
+            analyse_thread_video.start()
 
         elif pathlib.Path(self.dlg[0]).suffix.lower() == ".jpg":
             print(pathlib.Path(self.dlg[0]).suffix)
-            analyseThreadImages = threading.Thread(target=self.analyseImages)
-            analyseThreadImages.start()
+            analyse_thread_images = threading.Thread(target=self.analyse_images)
+            analyse_thread_images.start()
 
-            # detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
-            #           float(self.confidenceEntry.get()))
-
-        # float(self.iouEntry.get())
-        # float(self.confidenceEntry.get())
-
-    def appendText(self, string):
+    def append_text(self, string):
         self.txt.insert(END, "\n" + string)
 
-    def threadStartWeights(self):
+    def thread_start_weights(self):
 
         if self.classesFileEntry.get() == "" or self.weightsFileEntry.get() == "":
             print("no selected classes or weights")
@@ -275,10 +227,10 @@ class UI(Frame):
 
             return
         else:
-            t = threading.Thread(target=self.startLoadWeights)
+            t = threading.Thread(target=self.start_load_weights)
             t.start()
 
-    def startLoadWeights(self):
+    def start_load_weights(self):
         try:
             self.txt.insert(END, "\nLoading weights...")
             load_weights.main(weights_file=self.weightsFileEntry.get(), class_names_file=self.classesFileEntry.get())
@@ -295,7 +247,7 @@ class UI(Frame):
             self.txt.insert(END, "\nerror loading weights")
             self.txt.insert(END, err)
 
-    def analyseImages(self):
+    def analyse_images(self):
         namespath = self.get_names_path()
         try:
             self.txt.insert(END, "\nStarting image analysis...")
@@ -306,7 +258,7 @@ class UI(Frame):
             self.txt.insert(END, "\nerror in image analysis")
             self.txt.insert(END, err)
 
-    def analyseVideo(self):
+    def analyse_video(self):
         namespath = self.get_names_path()
         try:
             self.txt.insert(END, "\nStarting video analysis...")
