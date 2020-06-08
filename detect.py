@@ -1,13 +1,12 @@
 """Yolo v3 detection script.
 
-Saves the detections in the `detection` folder.
-
-Usage:
-    python detect.py <images/video> <iou threshold> <confidence threshold> <filenames>
-
-Example:
-    python detect.py images 0.5 0.5 data/images/dog.jpg data/images/office.jpg
-    python detect.py video 0.5 0.5 data/video/shinjuku.mp4
+The type parameter should be 'images' or 'video'
+Saves the detections in save_folder (parameter)
+Input video/images should be put as a list of paths in input_names (parameter)
+The iou_threshold (Intersection over Union) parameter should be a float between 0 and 1, preferrably above 0.5
+The confidence_threshold parameter should be a float between 0 and 1, preferrably above 0.5
+The class_names_file parameter should point to a .names-file that is valid for the model you are running.
+The create_csv parameter determines whether a csv-file will be created of the detections in the case of video.
 
 Note that only one video can be processed at one run.
 """
@@ -56,7 +55,6 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
         draw_boxes(input_names, detection_result, class_names, _MODEL_SIZE, save_folder)
 
         print('Detections have been saved successfully.')
-        #tf.compat.v1.reset_default_graph()
 
     elif type == 'video':
         inputs = tf.compat.v1.placeholder(tf.float32, [1, *_MODEL_SIZE, 3])
@@ -83,8 +81,6 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
                 csv_field_names.insert(0, "frame")
                 with open(csv_save_path, 'w', newline='') as csvfile:
                     csvwriter = csv.writer(csvfile)
-                    #csvwriter = csv.DictWriter(csvfile, fieldnames=class_names)
-                    #csvwriter.writeheader()
                     csvfile.write("sep=,")
                     csvfile.write('\n')
                     csvwriter.writerow(csv_field_names)
@@ -98,7 +94,6 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
                     detection_result = sess.run(detections,
                                                 feed_dict={inputs: [resized_frame]})
                     if create_csv:
-                        #csv_input_dict['frame'] = cap.get(cv2.CAP_PROP_POS_FRAMES)
                         csv_input_dict = {"frame": cap.get(cv2.CAP_PROP_POS_FRAMES)}
                         #csv_input_dict = {"frame": cap.get(cv2.CAP_PROP_POS_MSEC)}
                         for cls in range(len(class_names)):
@@ -109,7 +104,6 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
 
                         with open(csv_save_path, 'a', newline='') as csvfile:
                             csvwriter = csv.DictWriter(csvfile, fieldnames=csv_field_names)
-                            #csvwriter.writeheader()
                             csvwriter.writerow(csv_input_dict)
 
                     draw_frame(frame, frame_size, detection_result,
@@ -127,7 +121,6 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
                 cv2.destroyAllWindows()
                 cap.release()
                 print('Detections have been saved successfully.')
-        #tf.compat.v1.reset_default_graph()
 
     elif type == 'webcam':
         inputs = tf.compat.v1.placeholder(tf.float32, [1, *_MODEL_SIZE, 3])
