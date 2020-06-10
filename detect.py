@@ -222,6 +222,7 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
             if create_csv:
                 csv_save_path = save_folder + '/' + os.path.splitext(input_name_base)[0] + '_statistics.csv'
                 csv_field_names = class_names[:]
+                csv_field_names.insert(0, "time")
                 csv_field_names.insert(0, "frame")
                 print(fps)
                 sec_counter = 0
@@ -243,7 +244,7 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
                     if create_csv:
 
                         csv_input_dict["frame"] = cap.get(cv2.CAP_PROP_POS_FRAMES)
-                        csv_input_dict = {"time": cap.get(cv2.CAP_PROP_POS_MSEC)}
+                        csv_input_dict["time"] = cap.get(cv2.CAP_PROP_POS_MSEC)
                         for cls in range(len(class_names)):
                             number_of_obj = len(detection_result[0][cls])
                             if number_of_obj != 0:
