@@ -8,8 +8,9 @@ import detect
 exitFlag = 0
 threadList = ["One"]
 queueLock = threading.Lock()
-workQueue = queue.Queue(10)
+workQueue = queue.Queue(50)
 threads = []
+queueCheck = []
 threadID = 1
 
 
@@ -29,23 +30,47 @@ class ImagesEventHandler(PatternMatchingEventHandler):
         threads.append(thread)
 
     def on_created(self, event):
-        file_size = -1
-        while file_size != os.path.getsize(event.src_path):
-            file_size = os.path.getsize(event.src_path)
-        print("Watchdog received created event - % s." % event.src_path)
-        queueLock.acquire()
-        workQueue.put(event.src_path)
-        queueLock.release()
+
+        base_name = os.path.basename(event.src_path)
+        if "_analysed" not in base_name:
+            file_size = -1
+            while file_size != os.path.getsize(event.src_path):
+                file_size = os.path.getsize(event.src_path)
+            print("Watchdog received created event - % s." % event.src_path)
+            if event.src_path not in queueCheck:
+                queueCheck.append(event.src_path)
+                queueLock.acquire()
+                workQueue.put(event.src_path)
+                queueLock.release()
+            else:
+                print("Already in queue")
+        else:
+            print("Skipping already analysed file")
 
     def on_deleted(self, event):
-        print("deleted")
+        print("Watchdog received deleted event - % s." % event.src_path)
 
     # def dispatch(self, event):
     #    print("dispatch")
 
     def on_modified(self, event):
-        print("modified")
 
+        base_name = os.path.basename(event.src_path)
+        if "_analysed" not in base_name:
+            file_size = -1
+            while file_size != os.path.getsize(event.src_path):
+                file_size = os.path.getsize(event.src_path)
+            print("Watchdog received modified event - % s." % event.src_path)
+
+            if event.src_path not in queueCheck:
+                queueCheck.append(event.src_path)
+                queueLock.acquire()
+                workQueue.put(event.src_path)
+                queueLock.release()
+            else:
+                print("Already in queue")
+        else:
+            print("Skipping already analysed file")
 
 class Mythread(threading.Thread):
     def __init__(self, thread_id, name, q, iou, confidence, names, create_csv):
@@ -82,10 +107,8 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
 
             data_list = []
             data_list.insert(0, data)
-            base_name = os.path.basename(data)
-            print(base_name)
 
-            if file_end.lower() == ".mp4" and "_analysed" not in base_name:
+            if file_end.lower() == ".mp4":
                 try:
                     os.mkdir(save_loc)
                 except OSError as error:
@@ -99,7 +122,7 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
                     print("Error in video analysis")
                     print(err)
 
-            elif file_end.lower() == ".jpg" and "_analysed" not in base_name:
+            elif file_end.lower() == ".jpg":
                 try:
                     os.mkdir(save_loc)
                 except OSError as error:
@@ -120,6 +143,7 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
 
 def stop_threading():
     global exitFlag
+    queueCheck.clear()
     exitFlag = 1
     for t in threads:
         t.join()
