@@ -20,11 +20,10 @@ from yolo_v3 import Yolo_v3
 from utils import load_images, load_class_names, draw_boxes, draw_frame
 
 tf.compat.v1.disable_eager_execution()
-#_CLASS_NAMES_FILE has the DEFAULT .names path
+# _CLASS_NAMES_FILE has the DEFAULT .names path
 _MODEL_SIZE = (416, 416)
 _CLASS_NAMES_FILE = './data/labels/coco.names'
 _MAX_OUTPUT_SIZE = 20
-
 
 '''
 def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confidence_threshold=0.5, class_names_file=_CLASS_NAMES_FILE, create_csv=False):
@@ -171,7 +170,9 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
         raise ValueError("Inappropriate data type. Please choose either 'video' or 'images'.")
 '''
 
-def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confidence_threshold=0.5, class_names_file=_CLASS_NAMES_FILE, create_csv=False):
+
+def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confidence_threshold=0.5,
+         class_names_file=_CLASS_NAMES_FILE, create_csv=False):
     class_names = load_class_names(class_names_file)
     n_classes = len(class_names)
 
@@ -187,8 +188,6 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
         batch = load_images(input_names, model_size=_MODEL_SIZE)
         inputs = tf.compat.v1.placeholder(tf.float32, [batch_size, *_MODEL_SIZE, 3])
         detections = model(inputs, training=False)
-
-
 
         saver = tf.compat.v1.train.Saver(tf.compat.v1.global_variables(scope='yolo_v3_model'))
 
@@ -209,7 +208,8 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
             saver.restore(sess, './weights/model.ckpt')
 
             win_name = 'Video detection'
-            cv2.namedWindow(win_name)
+            cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
+            cv2.resizeWindow(win_name, 1280, 720)
             cap = cv2.VideoCapture(input_names[0])
             frame_size = (cap.get(cv2.CAP_PROP_FRAME_WIDTH),
                           cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -250,10 +250,11 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
                             if number_of_obj != 0:
                                 print(class_names[cls] + str(number_of_obj))
                                 if class_names[cls] in csv_input_dict:
-                                    csv_input_dict[class_names[cls]] = max(number_of_obj, csv_input_dict[class_names[cls]])
+                                    csv_input_dict[class_names[cls]] = max(number_of_obj,
+                                                                           csv_input_dict[class_names[cls]])
                                 else:
                                     csv_input_dict[class_names[cls]] = number_of_obj
-                        if cap.get(cv2.CAP_PROP_POS_MSEC)/1000 >= sec_counter:
+                        if cap.get(cv2.CAP_PROP_POS_MSEC) / 1000 >= sec_counter:
                             with open(csv_save_path, 'a', newline='') as csvfile:
                                 csvwriter = csv.DictWriter(csvfile, fieldnames=csv_field_names)
                                 csvwriter.writerow(csv_input_dict)
@@ -324,6 +325,7 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
 
     else:
         raise ValueError("Inappropriate data type. Please choose either 'video' or 'images'.")
+
 
 if __name__ == '__main__':
     main(sys.argv[1], sys.argv[6:], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]), sys.argv[5])

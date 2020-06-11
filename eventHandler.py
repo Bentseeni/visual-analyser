@@ -135,6 +135,11 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
                 except Exception as err:
                     print("Error in image analysis")
                     print(err)
+
+            queueLock.acquire()
+            queueCheck.remove(data)
+            print(queueCheck)
+            queueLock.release()
         else:
             queueLock.release()
         time.sleep(1)

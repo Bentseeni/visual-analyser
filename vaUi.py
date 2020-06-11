@@ -16,6 +16,7 @@ class UI(Frame):
     saveLocation = os.getcwd()
     weightsLocation = "./weights/yolov3.weights"
     classesLocation = "./data/labels/coco.names"
+    green = "#32a62e"
 
     isPolling = False
 
@@ -26,8 +27,7 @@ class UI(Frame):
         self.init_ui()
 
     def init_ui(self):
-        self.parent.title("File dialog")
-        # self.pack(fill=BOTH, expand=1)
+        self.parent.title("VA")
 
         menubar = Menu(self.parent)
         self.parent.config(menu=menubar)
@@ -85,11 +85,11 @@ class UI(Frame):
         self.loadWeightsButton = Button(self.parent, text="Load Weights", command=self.thread_start_weights)
         self.loadWeightsButton.grid(row=4, column=0)
 
-        self.analyseButton = Button(self.parent, text="Analyse", command=self.start_analyse, bg='#32a62e', height=3,
+        self.analyseButton = Button(self.parent, text="Analyse", command=self.start_analyse, bg=self.green, height=3,
                                     width=20)
         self.analyseButton.grid(row=8, column=0)
 
-        self.pollingButton = Button(self.parent, text="Start polling", command=self.start_polling)
+        self.pollingButton = Button(self.parent, text="Start polling", command=self.start_polling, bg='#b828ae')
         self.pollingButton.grid(row=11, column=0)
 
         self.txt = Text(self.parent, height=10, width=35)
@@ -179,12 +179,14 @@ class UI(Frame):
     def start_polling(self):
         if not self.isPolling:
             self.pollingButton['text'] = "Stop polling"
+            self.pollingButton['bg'] = "red"
             self.append_text("Polling started in location:\n" + self.pollingLocationEntry.get())
             self.isPolling = True
             polling_thread = threading.Thread(target=self.start_polling_thread)
             polling_thread.start()
         elif self.isPolling:
             self.pollingButton['text'] = "Start polling"
+            self.pollingButton['bg'] = '#b828ae'
             self.append_text("Polling stopped")
             self.isPolling = False
             self.pollingWatcher.stop()
