@@ -58,6 +58,7 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
         resize_factor = \
             (img.size[0] / model_size[0], img.size[1] / model_size[1])
         curr_cls_number = 0
+        curr_txt_y_pos = 0
         for cls in range(len(class_names)):
             boxes = boxes_dict[cls]
             if np.size(boxes) != 0:
@@ -69,7 +70,7 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
                     xy, confidence = box[:4], box[4]
                     xy = [xy[i] * resize_factor[i % 2] for i in range(4)]
                     x0, y0 = xy[0], xy[1]
-                    thickness = (img.size[0] + img.size[1]) // 200
+                    thickness = (img.size[0] + img.size[1]) // 400
                     for t in np.linspace(0, 1, thickness):
                         xy[0], xy[1] = xy[0] + t, xy[1] + t
                         xy[2], xy[3] = xy[2] - t, xy[3] - t
@@ -86,14 +87,18 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
                                               confidence * 100))
                 number_obj_txt = class_names[cls] + ": " + str(number_of_obj_for_cls)
                 txt_size = draw.textsize(number_obj_txt, font=font)
-                draw.text((0, curr_cls_number * txt_size[1]),
-                        number_obj_txt, fill='green', font=font)
+                # draw.text((0, curr_cls_number * txt_size[1] * 2),
+                #        number_obj_txt, fill='green', font=font)
+                curr_txt_y_pos += txt_size[1] + 1
+                draw.text((0, curr_txt_y_pos),
+                          number_obj_txt, fill='green', font=font)
+                print(txt_size[1])
         rgb_img = img.convert('RGB')
 
         input_name_base = os.path.basename(img_name)
 
         rgb_img.save(save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.jpg')
-        #rgb_img.save(save_folder + '/' + str(num + 1) + '.jpg')
+        # rgb_img.save(save_folder + '/' + str(num + 1) + '.jpg')
 
 
 def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
@@ -122,7 +127,7 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
                 number_of_obj_for_cls += 1
                 xy = box[:4]
                 xy = [int(xy[i] * resize_factor[i % 2]) for i in range(4)]
-                cv2.rectangle(frame, (xy[0], xy[1]), (xy[2], xy[3]), color[::-1], 2)
+                cv2.rectangle(frame, (xy[0], xy[1]), (xy[2], xy[3]), color[::-1], 1)
                 (test_width, text_height), baseline = cv2.getTextSize(class_names[cls],
                                                                       cv2.FONT_HERSHEY_SIMPLEX,
                                                                       0.75, 1)
@@ -135,5 +140,5 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
                                                                   cv2.FONT_HERSHEY_SIMPLEX,
                                                                   0.75, 1)
             number_obj_txt = class_names[cls] + ": " + str(number_of_obj_for_cls)
-            cv2.putText(frame, number_obj_txt, (0, curr_cls_number*text_height),
+            cv2.putText(frame, number_obj_txt, (0, curr_cls_number * text_height),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.75, (60, 220, 0), 1)
