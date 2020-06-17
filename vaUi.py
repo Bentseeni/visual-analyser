@@ -17,7 +17,7 @@ class UI(Frame):
     weightsLocation = "./weights/yolov3.weights"
     classesLocation = "./data/labels/coco.names"
     green = "#32a62e"
-    video_extensions = [".mp4", ".mov", ".avi", ".flv", ".mkv", ".webm", ".wmv"]
+    video_extensions = [".mp4", ".mov", ".avi", ".flv", ".mkv", ".webm", ".wmv", ".gif"]
     image_extensions = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".tga", ".webp"]
 
     isPolling = False
@@ -118,7 +118,7 @@ class UI(Frame):
         self.csvCheckButton.grid(row=7, column=0, columnspan=2, sticky=E, padx=30)
 
     def on_open(self):
-        ftypes = [('Video', '*.mp4 *.mov *.avi *.flv *.mkv *.webm *.wmv'), ('Images', '*.jpg *.jpeg *.png *.tif *.tiff *.bmp *.tga *.webp')]
+        ftypes = [('Video', '*.mp4 *.mov *.avi *.flv *.mkv *.webm *.wmv *.gif'), ('Images', '*.jpg *.jpeg *.png *.tif *.tiff *.bmp *.tga *.webp')]
         self.dlg = fd.askopenfilenames(filetypes=ftypes)
         print(self.dlg)
         if self.dlg == "":

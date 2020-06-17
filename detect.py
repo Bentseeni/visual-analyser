@@ -24,6 +24,7 @@ tf.compat.v1.disable_eager_execution()
 _MODEL_SIZE = (416, 416)
 _CLASS_NAMES_FILE = './data/labels/coco.names'
 _MAX_OUTPUT_SIZE = 20
+_TO_MP4_FORMAT_LIST = [".webm", ".gif"]
 
 '''
 def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confidence_threshold=0.5, class_names_file=_CLASS_NAMES_FILE, create_csv=False):
@@ -218,6 +219,8 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
             input_name_base = os.path.basename(input_names[0])
             #video_save_path = save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.mp4'
             video_save_path = save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed' + os.path.splitext(input_name_base)[1]
+            if os.path.splitext(input_name_base)[1] in _TO_MP4_FORMAT_LIST:
+                video_save_path = save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.mp4'
             #print(os.path.splitext(input_name_base)[1])
             out = cv2.VideoWriter(video_save_path, fourcc, fps,
                                   (int(frame_size[0]), int(frame_size[1])))
