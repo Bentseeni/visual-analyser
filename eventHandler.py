@@ -12,6 +12,10 @@ workQueue = queue.Queue(50)
 threads = []
 queueCheck = []
 threadID = 1
+video_extensions = [".mp4", ".mov", ".avi", ".flv", ".mkv", ".webm", ".wmv"]
+image_extensions = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".tga", ".webp"]
+patterns = ["*.mp4", "*.mov", "*.avi", "*.flv", "*.mkv", "*.webm", "*.wmv", "*.jpg", "*.jpeg", "*.png", "*.tiff",
+            "*.tif", "*.bmp", "*.tga", "*.webp"]
 
 
 class ImagesEventHandler(PatternMatchingEventHandler):
@@ -21,7 +25,7 @@ class ImagesEventHandler(PatternMatchingEventHandler):
         self.eventConfidence = confidence
         self.eventNames = names
         self.eventCreateCsv = create_csv
-        PatternMatchingEventHandler.__init__(self, patterns=['*.jpg', '*.mp4'],
+        PatternMatchingEventHandler.__init__(self, patterns=patterns,
                                              ignore_directories=True, case_sensitive=False)
 
         thread = Mythread(threadID, "Analyse", workQueue, self.eventIou, self.eventConfidence, self.eventNames,
@@ -72,6 +76,7 @@ class ImagesEventHandler(PatternMatchingEventHandler):
         else:
             print("Skipping already analysed file")
 
+
 class Mythread(threading.Thread):
     def __init__(self, thread_id, name, q, iou, confidence, names, create_csv):
         threading.Thread.__init__(self)
@@ -108,7 +113,8 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
             data_list = []
             data_list.insert(0, data)
 
-            if file_end.lower() == ".mp4":
+            # if file_end.lower() == ".mp4":
+            if file_end.lower() in video_extensions:
                 try:
                     os.mkdir(save_loc)
                 except OSError as error:
@@ -122,7 +128,8 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
                     print("Error in video analysis")
                     print(err)
 
-            elif file_end.lower() == ".jpg":
+            # elif file_end.lower() == ".jpg":
+            elif file_end.lower() in image_extensions:
                 try:
                     os.mkdir(save_loc)
                 except OSError as error:
