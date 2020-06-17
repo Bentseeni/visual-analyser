@@ -17,6 +17,8 @@ class UI(Frame):
     weightsLocation = "./weights/yolov3.weights"
     classesLocation = "./data/labels/coco.names"
     green = "#32a62e"
+    video_extensions = [".mp4"]
+    image_extensions = [".jpg",".png"]
 
     isPolling = False
 
@@ -116,7 +118,7 @@ class UI(Frame):
         self.csvCheckButton.grid(row=7, column=0, columnspan=2, sticky=E, padx=30)
 
     def on_open(self):
-        ftypes = [('Video', '*.mp4'), ('Images', '*.jpg')]
+        ftypes = [('Video', '*.mp4'), ('Images', '*.jpg *.jpeg *.png')]
         self.dlg = fd.askopenfilenames(filetypes=ftypes)
         print(self.dlg)
         if self.dlg == "":
@@ -208,12 +210,14 @@ class UI(Frame):
     def start_analyse(self):
         print(self.dlg)
 
-        if pathlib.Path(self.dlg[0]).suffix.lower() == ".mp4":
+        #if pathlib.Path(self.dlg[0]).suffix.lower() == ".mp4":
+        if pathlib.Path(self.dlg[0]).suffix.lower() in self.video_extensions:
             print(pathlib.Path(self.dlg[0]).suffix)
             analyse_thread_video = threading.Thread(target=self.analyse_video)
             analyse_thread_video.start()
 
-        elif pathlib.Path(self.dlg[0]).suffix.lower() == ".jpg":
+        #elif pathlib.Path(self.dlg[0]).suffix.lower() == ".jpg":
+        elif pathlib.Path(self.dlg[0]).suffix.lower() in self.image_extensions:
             print(pathlib.Path(self.dlg[0]).suffix)
             analyse_thread_images = threading.Thread(target=self.analyse_images)
             analyse_thread_images.start()
