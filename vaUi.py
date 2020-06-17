@@ -118,7 +118,9 @@ class UI(Frame):
         self.csvCheckButton.grid(row=7, column=0, columnspan=2, sticky=E, padx=30)
 
     def on_open(self):
-        ftypes = [('Video', '*.mp4 *.mov *.avi *.flv *.mkv *.webm *.wmv *.gif'), ('Images', '*.jpg *.jpeg *.png *.tif *.tiff *.bmp *.tga *.webp')]
+        ftypes = [('Video', '*.mp4 *.mov *.avi *.flv *.mkv *.webm *.wmv *.gif'), ('Images', '*.jpg *.jpeg *.png *.tif '
+                                                                                            '*.tiff *.bmp *.tga '
+                                                                                            '*.webp')]
         self.dlg = fd.askopenfilenames(filetypes=ftypes)
         print(self.dlg)
         if self.dlg == "":

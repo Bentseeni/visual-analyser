@@ -12,9 +12,9 @@ workQueue = queue.Queue(50)
 threads = []
 queueCheck = []
 threadID = 1
-video_extensions = [".mp4", ".mov", ".avi", ".flv", ".mkv", ".webm", ".wmv"]
+video_extensions = [".mp4", ".mov", ".avi", ".flv", ".mkv", ".webm", ".wmv", ".gif"]
 image_extensions = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".tga", ".webp"]
-patterns = ["*.mp4", "*.mov", "*.avi", "*.flv", "*.mkv", "*.webm", "*.wmv", "*.jpg", "*.jpeg", "*.png", "*.tiff",
+patterns = ["*.mp4", "*.mov", "*.avi", "*.flv", "*.mkv", "*.webm", "*.wmv", ".gif", "*.jpg", "*.jpeg", "*.png", "*.tiff",
             "*.tif", "*.bmp", "*.tga", "*.webp"]
 
 
