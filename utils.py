@@ -92,12 +92,14 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
                 curr_txt_y_pos += txt_size[1] + 1
                 draw.text((0, curr_txt_y_pos),
                           number_obj_txt, fill='green', font=font)
-                print(txt_size[1])
+                #print(txt_size[1])
         rgb_img = img.convert('RGB')
-
+        #print("afterimgconvert")
         input_name_base = os.path.basename(img_name)
 
-        rgb_img.save(save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.jpg')
+        #rgb_img.save(save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.jpg')
+        rgb_img.save(save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed' + os.path.splitext(input_name_base)[1])
+        #print("afterimgsave")
         # rgb_img.save(save_folder + '/' + str(num + 1) + '.jpg')
 
 

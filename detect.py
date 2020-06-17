@@ -216,7 +216,9 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
             fourcc = cv2.VideoWriter_fourcc(*'X264')
             fps = cap.get(cv2.CAP_PROP_FPS)
             input_name_base = os.path.basename(input_names[0])
-            video_save_path = save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.mp4'
+            #video_save_path = save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.mp4'
+            video_save_path = save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed' + os.path.splitext(input_name_base)[1]
+            #print(os.path.splitext(input_name_base)[1])
             out = cv2.VideoWriter(video_save_path, fourcc, fps,
                                   (int(frame_size[0]), int(frame_size[1])))
             if create_csv:
