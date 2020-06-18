@@ -101,10 +101,10 @@ class UI(Frame):
         self.classesLocation = self.get_names_path()
 
         self.weightsLabel = Label(self.parent, text=os.path.basename(self.weightsLocation))
-        self.weightsLabel.grid(row=5, column=0)
+        self.weightsLabel.grid(row=5, column=0, sticky=W, width=40)
 
         self.classesLabel = Label(self.parent, text=os.path.basename(self.classesLocation))
-        self.classesLabel.grid(row=6, column=0)
+        self.classesLabel.grid(row=6, column=0, sticky=W, width=40)
 
         self.iouLbl = Label(self.parent, text="iou")
         self.iouLbl.grid(row=5, column=1)
