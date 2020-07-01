@@ -4,6 +4,7 @@ import queue
 import time
 import threading
 import detect
+from tkinter import *
 
 exitFlag = 0
 threadList = ["One"]
@@ -95,17 +96,35 @@ class Mythread(threading.Thread):
 
 
 def process_data(thread_name, q, iou, confidence, names, create_csv):
+    root = Tk()
+    root.title("Polling UI")
+    #root.geometry("600x300")
+    txt = Text(root, height=20, width=70)
+    vsb = Scrollbar(root, orient="vertical", command=txt.yview)
+    txt.configure(yscrollcommand=vsb.set)
+    #txt.grid(row=0,column=0)
+    vsb.pack(side="right", fill="y")
+    txt.pack(side="left", fill="both", expand=True)
+    root.update()
     while not exitFlag:
         queueLock.acquire()
         print(".....Polling.....")
+        txt.insert(END, "\n" + ".....Polling.....")
+        txt.see(END)
+        root.update()
         if not workQueue.empty():
             data = q.get()
             queueLock.release()
             print("%s processing %s" % (thread_name, data))
+            txt.insert(END, "\n" + "%s processing %s" % (thread_name, data))
             file_end = (os.path.splitext(os.path.basename(data))[1])
             print(file_end)
+            txt.insert(END, "\n" + file_end)
             save_loc = os.path.dirname(data)
             print(save_loc)
+            txt.insert(END, "\n" + save_loc)
+
+
 
             save_loc = save_loc + r"\saved"
             save_loc = os.path.abspath(save_loc)
@@ -119,28 +138,39 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
                     os.mkdir(save_loc)
                 except OSError as error:
                     print(error)
+                    txt.insert(END, "\n" + error)
                 try:
                     print("Starting video analysis...")
+                    txt.insert(END, "\n" + "Starting video analysis...")
+                    root.update()
+                    txt.see(END)
                     detect.main("video", data_list, save_loc, iou,
                                 confidence, names, create_csv)
                     print("Video analysis ended successfully")
+                    txt.insert(END, "\n" + "Video analysis ended successfully")
                 except Exception as err:
                     print("Error in video analysis")
                     print(err)
-
+                    txt.insert(END, "\n" + err)
             # elif file_end.lower() == ".jpg":
             elif file_end.lower() in image_extensions:
                 try:
                     os.mkdir(save_loc)
                 except OSError as error:
                     print(error)
+                    txt.insert(END, "\n" + error)
                 try:
                     print("Starting Image analysis...")
+                    txt.insert(END, "\n" + "Starting Image analysis...")
+                    root.update()
+                    txt.see(END)
                     detect.main("images", data_list, save_loc, iou,
                                 confidence, names, create_csv)
                     print("Image analysis ended successfully")
+                    txt.insert(END, "\n" + "Image analysis ended successfully")
                 except Exception as err:
                     print("Error in image analysis")
+                    txt.insert(END, "\n" + err)
                     print(err)
 
             queueLock.acquire()
@@ -149,8 +179,10 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
             queueLock.release()
         else:
             queueLock.release()
-        time.sleep(1)
+        time.sleep(0.5)
     print("EXITING ANALYSE THREAD")
+    txt.insert(END, "\n" + "EXITING ANALYSE THREAD")
+    root.update()
 
 
 def stop_threading():

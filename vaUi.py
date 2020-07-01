@@ -38,7 +38,7 @@ class UI(Frame):
         file_menu.add_command(label="Open", command=self.on_open)
         file_menu.add_command(label="Select weights", command=self.select_weights)
         file_menu.add_command(label="Select classes", command=self.select_classes)
-        file_menu.add_command(label="Test", command=self.class_names)
+        file_menu.add_command(label="Test", command=self.test)
         menubar.add_cascade(label="File", menu=file_menu)
 
         self.openFileEntry = Entry(self.parent, width=50)
@@ -299,10 +299,14 @@ class UI(Frame):
         finally:
             return current_weights_path
 
+    def test(self):
+        print("this is test")
+
 
 def main():
     root = Tk()
     ui = UI(root)
+
     root.geometry("420x500+300+300")
     root.mainloop()
 
