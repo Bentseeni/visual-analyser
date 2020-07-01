@@ -132,9 +132,9 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
             if file_end.lower() in video_extensions:
                 try:
                     os.mkdir(save_loc)
-                except OSError as error:
+                except FileExistsError as error:
                     print(error)
-                    append_text(txt, root, error)
+                    append_text(txt, root, "Saved folder already exists")
 
                 try:
                     print("Starting video analysis...")
@@ -152,16 +152,15 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
             elif file_end.lower() in image_extensions:
                 try:
                     os.mkdir(save_loc)
-                except OSError as error:
+                except FileExistsError as error:
                     print(error)
-                    append_text(txt, root, error)
+                    append_text(txt, root, "Saved folder already exists")
                 try:
                     print("Starting Image analysis...")
                     append_text(txt, root, "Starting Image analysis...")
                     detect.main("images", data_list, save_loc, iou,
                                 confidence, names, create_csv)
                     print("Image analysis ended successfully")
-                    #txt.insert(END, "\n" + "Image analysis ended successfully")
                     append_text(txt, root, "Image analysis ended successfully")
                 except Exception as err:
                     print("Error in image analysis")
