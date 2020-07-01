@@ -202,6 +202,3 @@ def append_text(text, root, append_string):
     text.insert(END, "\n" + str(append_string))
     text.see(END)
     root.update()
-
-root = Tk()
-txt = Text(root, height=20, width=70)
