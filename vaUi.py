@@ -26,6 +26,7 @@ class UI(Frame):
         Frame.__init__(self, parent)
 
         self.parent = parent
+
         self.init_ui()
 
     def init_ui(self):
@@ -346,12 +347,21 @@ class UI(Frame):
             self.append_text("Enabled Polling save location")
             print(self.pollingSaveLocationEntry.get())
 
+    def disable_event(self):
+        if self.isPolling:
+            self.pollingWatcher.stop()
+            self.isPolling = False
+        self.parent.destroy()
+
 def main():
     root = Tk()
     ui = UI(root)
 
+    root.protocol("WM_DELETE_WINDOW", ui.disable_event)
     root.geometry("430x560+300+300")
     root.mainloop()
+
+
 
 
 if __name__ == '__main__':
