@@ -61,6 +61,10 @@ class UI(Frame):
         self.pollingLocationEntry.grid(row=10, column=0, pady=10)
         self.pollingLocationEntry.insert(0, os.getcwd())
 
+        self.pollingSaveLocationEntry = Entry(self.parent, width=50)
+        self.pollingSaveLocationEntry.grid(row=12, column=0, pady=5)
+        self.pollingSaveLocationEntry.insert(0, os.getcwd())
+
         self.openButton = Button(self.parent, text="Open file", command=self.on_open)
         self.openButton.grid(row=0, column=1)
 
@@ -75,6 +79,10 @@ class UI(Frame):
 
         self.pollingLocationButton = Button(self.parent, text="Polling location", command=self.select_polling_location)
         self.pollingLocationButton.grid(row=10, column=1)
+
+        self.pollingSaveLocationButton = Button(self.parent, text="Polling save location",
+                                                command=self.select_polling_save_location)
+        self.pollingSaveLocationButton.grid(row=12, column=1)
 
         self.iouEntry = Entry(self.parent, width=5)
         self.iouEntry.grid(row=5, column=0, sticky=E)
@@ -92,7 +100,7 @@ class UI(Frame):
         self.analyseButton.grid(row=8, column=0)
 
         self.pollingButton = Button(self.parent, text="Start polling", command=self.start_polling, bg='#b828ae')
-        self.pollingButton.grid(row=11, column=0)
+        self.pollingButton.grid(row=13, column=0)
 
         self.txt = Text(self.parent, height=10, width=35)
         self.txt.grid(row=9, column=0, sticky=W, pady=5)
@@ -116,6 +124,12 @@ class UI(Frame):
         self.csvCheckButton = Checkbutton(self.parent, text="Create CSV", variable=self.createCsv, onvalue=True,
                                           offvalue=False)
         self.csvCheckButton.grid(row=7, column=0, columnspan=2, sticky=E, padx=30)
+
+        self.usePollingLocation = BooleanVar()
+        self.PollingCheckButton = Checkbutton(self.parent, text="Use same location for saving",
+                                              variable=self.usePollingLocation, onvalue=True, offvalue=False,
+                                              command=self.disable_polling_save_location)
+        self.PollingCheckButton.grid(row=11, column=0, columnspan=2, sticky=E)
 
     def on_open(self):
         ftypes = [('Video', '*.mp4 *.mov *.avi *.flv *.mkv *.webm *.wmv *.gif'), ('Images', '*.jpg *.jpeg *.png *.tif '
@@ -173,12 +187,20 @@ class UI(Frame):
         print(self.saveLocation)
 
     def select_polling_location(self):
-        self.pollingLocation = fd.askdirectory()
-        if self.pollingLocation == "":
-            self.pollingLocation = os.getcwd()
+        pollingLocation = fd.askdirectory()
+        if pollingLocation == "":
+            pollingLocation = os.getcwd()
         self.pollingLocationEntry.delete(0, END)
-        self.pollingLocationEntry.insert(0, self.pollingLocation)
-        print(self.saveLocation)
+        self.pollingLocationEntry.insert(0, pollingLocation)
+        print(pollingLocation)
+
+    def select_polling_save_location(self):
+        pollingSaveLocation = fd.askdirectory()
+        if pollingSaveLocation == "":
+            pollingSaveLocation = os.getcwd()
+        self.pollingSaveLocationEntry.delete(0, END)
+        self.pollingSaveLocationEntry.insert(0, pollingSaveLocation)
+        print(pollingSaveLocation)
 
     def start_polling(self):
         if not self.isPolling:
@@ -204,9 +226,15 @@ class UI(Frame):
             namespathfile.close()
         except Exception:
             self.txt.insert(END, "\nCouldn't read namespath.txt, using default .names")
-
-        self.pollingWatcher = watcher.ImagesWatcher(self.pollingLocationEntry.get(), float(self.iouEntry.get()),
-                                                    float(self.confidenceEntry.get()), namespath, self.createCsv.get())
+        if self.usePollingLocation.get():
+            self.pollingWatcher = watcher.ImagesWatcher(self.pollingLocationEntry.get(), float(self.iouEntry.get()),
+                                                        float(self.confidenceEntry.get()), namespath,
+                                                        self.createCsv.get(),
+                                                        self.pollingLocationEntry.get())
+        else:
+            self.pollingWatcher = watcher.ImagesWatcher(self.pollingLocationEntry.get(), float(self.iouEntry.get()),
+                                                        float(self.confidenceEntry.get()), namespath, self.createCsv.get(),
+                                                        self.pollingSaveLocationEntry.get())
         self.pollingWatcher.run()
 
     def start_analyse(self):
@@ -300,14 +328,29 @@ class UI(Frame):
             return current_weights_path
 
     def test(self):
-        print("this is test")
+        if self.usePollingLocation:
+            self.pollingSaveLocationButton.configure(state=DISABLED)
+            print("this is test")
+        elif not self.usePollingLocation:
+            print("this is test")
 
+    def disable_polling_save_location(self):
+        if self.usePollingLocation.get():
+            self.pollingSaveLocationButton.configure(state=DISABLED)
+            self.pollingSaveLocationEntry.configure(state=DISABLED)
+            self.append_text("Disabled Polling save location")
+            print(self.pollingLocationEntry.get())
+        else:
+            self.pollingSaveLocationButton.configure(state=NORMAL)
+            self.pollingSaveLocationEntry.configure(state=NORMAL)
+            self.append_text("Enabled Polling save location")
+            print(self.pollingSaveLocationEntry.get())
 
 def main():
     root = Tk()
     ui = UI(root)
 
-    root.geometry("420x500+300+300")
+    root.geometry("430x560+300+300")
     root.mainloop()
 
 

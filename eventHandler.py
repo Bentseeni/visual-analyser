@@ -22,16 +22,17 @@ patterns = ["*.mp4", "*.mov", "*.avi", "*.flv", "*.mkv", "*.webm", "*.wmv", ".gi
 
 class ImagesEventHandler(PatternMatchingEventHandler):
 
-    def __init__(self, iou, confidence, names, create_csv):
+    def __init__(self, iou, confidence, names, create_csv, save_loc):
         self.eventIou = iou
         self.eventConfidence = confidence
         self.eventNames = names
         self.eventCreateCsv = create_csv
+        self.eventSaveLoc = save_loc
         PatternMatchingEventHandler.__init__(self, patterns=patterns,
                                              ignore_directories=True, case_sensitive=False)
 
         thread = Mythread(threadID, "Analyse", workQueue, self.eventIou, self.eventConfidence, self.eventNames,
-                          self.eventCreateCsv)
+                          self.eventCreateCsv, self.eventSaveLoc)
         thread.start()
         threads.append(thread)
 
@@ -80,7 +81,7 @@ class ImagesEventHandler(PatternMatchingEventHandler):
 
 
 class Mythread(threading.Thread):
-    def __init__(self, thread_id, name, q, iou, confidence, names, create_csv):
+    def __init__(self, thread_id, name, q, iou, confidence, names, create_csv, save_loc):
         threading.Thread.__init__(self)
         self.threadID = thread_id
         self.name = name
@@ -89,14 +90,15 @@ class Mythread(threading.Thread):
         self.confidence = confidence
         self.names = names
         self.createCsv = create_csv
+        self.save_loc = save_loc
 
     def run(self):
         print("Starting " + self.name)
-        process_data(self.name, self.q, self.iou, self.confidence, self.names, self.createCsv)
+        process_data(self.name, self.q, self.iou, self.confidence, self.names, self.createCsv, self.save_loc)
         print("Exiting " + self.name)
 
 
-def process_data(thread_name, q, iou, confidence, names, create_csv):
+def process_data(thread_name, q, iou, confidence, names, create_csv, save_location):
     root = Tk()
     root.title("Polling UI")
     root.protocol("WM_DELETE_WINDOW", disable_event)
@@ -113,17 +115,21 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
         if not workQueue.empty():
             data = q.get()
             queueLock.release()
+            append_text(txt, root, "Watchdog received event - % s." % data)
             print("%s processing %s" % (thread_name, data))
             append_text(txt, root, "%s processing %s" % (thread_name, data))
             file_end = (os.path.splitext(os.path.basename(data))[1])
             print(file_end)
-            txt.insert(END, "\n" + file_end)
-            save_loc = os.path.dirname(data)
-            print(save_loc)
-            txt.insert(END, "\n" + save_loc)
+            append_text(txt, root, file_end)
 
-            save_loc = save_loc + r"\saved"
-            save_loc = os.path.abspath(save_loc)
+            #save_loc = os.path.dirname(data)
+            #print(save_loc)
+
+            append_text(txt, root, save_location)
+
+            save_location = save_location + r"\analysed"
+            save_location = os.path.abspath(save_location)
+            print(save_location)
 
             data_list = []
             data_list.insert(0, data)
@@ -131,7 +137,7 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
             # if file_end.lower() == ".mp4":
             if file_end.lower() in video_extensions:
                 try:
-                    os.mkdir(save_loc)
+                    os.mkdir(save_location)
                 except FileExistsError as error:
                     print(error)
                     append_text(txt, root, "Saved folder already exists")
@@ -139,7 +145,7 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
                 try:
                     print("Starting video analysis...")
                     append_text(txt, root, "Starting video analysis...")
-                    detect.main("video", data_list, save_loc, iou,
+                    detect.main("video", data_list, save_location, iou,
                                 confidence, names, create_csv)
                     print("Video analysis ended successfully")
                     append_text(txt, root, "Video analysis ended successfully")
@@ -151,14 +157,14 @@ def process_data(thread_name, q, iou, confidence, names, create_csv):
             # elif file_end.lower() == ".jpg":
             elif file_end.lower() in image_extensions:
                 try:
-                    os.mkdir(save_loc)
+                    os.mkdir(save_location)
                 except FileExistsError as error:
                     print(error)
                     append_text(txt, root, "Saved folder already exists")
                 try:
                     print("Starting Image analysis...")
                     append_text(txt, root, "Starting Image analysis...")
-                    detect.main("images", data_list, save_loc, iou,
+                    detect.main("images", data_list, save_location, iou,
                                 confidence, names, create_csv)
                     print("Image analysis ended successfully")
                     append_text(txt, root, "Image analysis ended successfully")

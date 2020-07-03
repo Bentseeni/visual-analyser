@@ -7,10 +7,10 @@ import eventHandler
 
 
 class ImagesWatcher:
-    def __init__(self, src_path, iou, confidence, names, create_csv):
+    def __init__(self, src_path, iou, confidence, names, create_csv, save_loc):
         eventHandler.lower_exit_flag()
         self.__src_path = src_path
-        self.__event_handler = eventHandler.ImagesEventHandler(iou, confidence, names, create_csv)
+        self.__event_handler = eventHandler.ImagesEventHandler(iou, confidence, names, create_csv, save_loc)
         self.__event_observer = Observer()
 
     def run(self):
