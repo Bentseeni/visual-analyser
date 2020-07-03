@@ -110,6 +110,7 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
     root.update()
     save_location = save_location + r"\analysed"
     save_location = os.path.abspath(save_location)
+    counter = 0
     while not exitFlag:
         queueLock.acquire()
         print(".....Polling.....")
@@ -129,7 +130,6 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
 
             append_text(txt, root, save_location)
 
-
             print(save_location)
 
             data_list = []
@@ -137,6 +137,7 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
 
             # if file_end.lower() == ".mp4":
             if file_end.lower() in video_extensions:
+                counter = counter + 1
                 try:
                     os.mkdir(save_location)
                 except FileExistsError as error:
@@ -160,6 +161,7 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
                     append_text(txt, root, err)
             # elif file_end.lower() == ".jpg":
             elif file_end.lower() in image_extensions:
+                counter = counter + 1
                 try:
                     os.mkdir(save_location)
                 except FileExistsError as error:
@@ -185,6 +187,7 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
             queueCheck.remove(data)
             print(queueCheck)
             queueLock.release()
+            append_text(txt, root, counter + " Files analysed")
         else:
             queueLock.release()
         time.sleep(0.5)
