@@ -108,6 +108,8 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
     vsb.pack(side="right", fill="y")
     txt.pack(side="left", fill="both", expand=True)
     root.update()
+    save_location = save_location + r"\analysed"
+    save_location = os.path.abspath(save_location)
     while not exitFlag:
         queueLock.acquire()
         print(".....Polling.....")
@@ -127,8 +129,7 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
 
             append_text(txt, root, save_location)
 
-            save_location = save_location + r"\analysed"
-            save_location = os.path.abspath(save_location)
+
             print(save_location)
 
             data_list = []
@@ -141,6 +142,9 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
                 except FileExistsError as error:
                     print(error)
                     append_text(txt, root, "Saved folder already exists")
+                except OSError as error:
+                    print(error)
+                    append_text(txt, root, error)
 
                 try:
                     print("Starting video analysis...")
@@ -161,6 +165,9 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
                 except FileExistsError as error:
                     print(error)
                     append_text(txt, root, "Saved folder already exists")
+                except OSError as error:
+                    print(error)
+                    append_text(txt, root, error)
                 try:
                     print("Starting Image analysis...")
                     append_text(txt, root, "Starting Image analysis...")

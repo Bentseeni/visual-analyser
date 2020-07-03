@@ -126,7 +126,7 @@ class UI(Frame):
         self.csvCheckButton.grid(row=7, column=0, columnspan=2, sticky=E, padx=30)
 
         self.usePollingLocation = BooleanVar()
-        self.PollingCheckButton = Checkbutton(self.parent, text="Use same location for saving",
+        self.PollingCheckButton = Checkbutton(self.parent, text="Use polling location for saving",
                                               variable=self.usePollingLocation, onvalue=True, offvalue=False,
                                               command=self.disable_polling_save_location)
         self.PollingCheckButton.grid(row=11, column=0, columnspan=2, sticky=E)
