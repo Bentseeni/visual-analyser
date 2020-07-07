@@ -21,6 +21,9 @@ patterns = ["*.mp4", "*.mov", "*.avi", "*.flv", "*.mkv", "*.webm", "*.wmv", ".gi
 
 
 class ImagesEventHandler(PatternMatchingEventHandler):
+    """
+    Watchdog event handlers
+    """
 
     def __init__(self, iou, confidence, names, create_csv, save_loc):
         self.eventIou = iou
@@ -81,6 +84,9 @@ class ImagesEventHandler(PatternMatchingEventHandler):
 
 
 class Mythread(threading.Thread):
+    """
+    Thread for analysing polled images and videos
+    """
     def __init__(self, thread_id, name, q, iou, confidence, names, create_csv, save_loc):
         threading.Thread.__init__(self)
         self.threadID = thread_id
@@ -99,6 +105,17 @@ class Mythread(threading.Thread):
 
 
 def process_data(thread_name, q, iou, confidence, names, create_csv, save_location):
+    """
+    Analyse polled images and videos
+    :param thread_name: Name of Thread
+    :param q: Queue
+    :param iou: iou value
+    :param confidence: confidence value
+    :param names: names file location
+    :param create_csv: If csv file is created for analysed file
+    :param save_location: save location for analysed file
+    :return: None
+    """
     root = Tk()
     root.title("Polling UI")
     root.protocol("WM_DELETE_WINDOW", disable_event)
@@ -196,6 +213,9 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
 
 
 def stop_threading():
+    """
+    Stops polling thread
+    """
     global exitFlag
     queueCheck.clear()
     exitFlag = 1
@@ -205,15 +225,29 @@ def stop_threading():
 
 
 def lower_exit_flag():
+    """
+    Sets exit flag to false
+    """
     global exitFlag
     exitFlag = 0
 
 
 def disable_event():
+    """
+    Passes the window destroy event
+    """
     pass
 
 
 def append_text(text, root, append_string):
+    """
+    Appends text to text box
+    :param text: text object
+    :param root: Ui root object
+    :param append_string: String to append
+    :return: None
+    """
+
     text.insert(END, "\n" + str(append_string))
     text.see(END)
     root.update()

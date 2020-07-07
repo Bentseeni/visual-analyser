@@ -6,7 +6,6 @@ import threading
 import pathlib
 import detect
 import watcher
-
 import utils
 import csv
 
@@ -19,7 +18,6 @@ class UI(Frame):
     green = "#32a62e"
     video_extensions = [".mp4", ".mov", ".avi", ".flv", ".mkv", ".webm", ".wmv", ".gif"]
     image_extensions = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".tga", ".webp"]
-
     isPolling = False
 
     def __init__(self, parent):
@@ -30,13 +28,16 @@ class UI(Frame):
         self.init_ui()
 
     def init_ui(self):
+        """
+        Initialize user interface
+        """
         self.parent.title("VA")
 
         menubar = Menu(self.parent)
         self.parent.config(menu=menubar)
 
         file_menu = Menu(menubar)
-        file_menu.add_command(label="Open", command=self.on_open)
+        file_menu.add_command(label="Open", command=self.open_file)
         file_menu.add_command(label="Select weights", command=self.select_weights)
         file_menu.add_command(label="Select classes", command=self.select_classes)
         file_menu.add_command(label="Test", command=self.test)
@@ -66,7 +67,7 @@ class UI(Frame):
         self.pollingSaveLocationEntry.grid(row=12, column=0, pady=5)
         self.pollingSaveLocationEntry.insert(0, os.getcwd())
 
-        self.openButton = Button(self.parent, text="Open file", command=self.on_open)
+        self.openButton = Button(self.parent, text="Open file", command=self.open_file)
         self.openButton.grid(row=0, column=1)
 
         self.saveButton = Button(self.parent, text="Save location", command=self.select_save_location)
@@ -132,7 +133,10 @@ class UI(Frame):
                                               command=self.disable_polling_save_location)
         self.PollingCheckButton.grid(row=11, column=0, columnspan=2, sticky=E)
 
-    def on_open(self):
+    def open_file(self):
+        """
+        Open image or video file
+        """
         ftypes = [('Video', '*.mp4 *.mov *.avi *.flv *.mkv *.webm *.wmv *.gif'), ('Images', '*.jpg *.jpeg *.png *.tif '
                                                                                             '*.tiff *.bmp *.tga '
                                                                                             '*.webp')]
@@ -150,6 +154,9 @@ class UI(Frame):
         return text
 
     def select_weights(self):
+        """
+        Select weights file
+        """
         ftypes = [('Weights', '*.weights')]
         self.weightsLocation = fd.askopenfilename(filetypes=ftypes)
         if self.weightsLocation == "":
@@ -159,6 +166,9 @@ class UI(Frame):
         print(self.weightsLocation)
 
     def select_classes(self):
+        """
+        Select classes file
+        """
         ftypes = [('Classes', '*.names')]
         self.classesLocation = fd.askopenfilename(filetypes=ftypes)
         if self.classesLocation == "":
@@ -168,6 +178,9 @@ class UI(Frame):
         print(self.classesLocation)
 
     def class_names(self):
+        """
+        Write class names into csv file
+        """
         class_names = utils.load_class_names(self.classesFileEntry.get())
         class_names.insert(0, "frame")
         print(class_names)
@@ -180,6 +193,9 @@ class UI(Frame):
             csvwriter.writerow(class_names)
 
     def select_save_location(self):
+        """
+        Select save location for analysed file
+        """
         self.saveLocation = fd.askdirectory()
         if self.saveLocation == "":
             self.saveLocation = os.getcwd()
@@ -188,6 +204,9 @@ class UI(Frame):
         print(self.saveLocation)
 
     def select_polling_location(self):
+        """
+        Select location to start polling
+        """
         pollingLocation = fd.askdirectory()
         if pollingLocation == "":
             pollingLocation = os.getcwd()
@@ -196,6 +215,9 @@ class UI(Frame):
         print(pollingLocation)
 
     def select_polling_save_location(self):
+        """
+        Select where polling feature saves analysed files
+        """
         pollingSaveLocation = fd.askdirectory()
         if pollingSaveLocation == "":
             pollingSaveLocation = os.getcwd()
@@ -204,6 +226,9 @@ class UI(Frame):
         print(pollingSaveLocation)
 
     def start_polling(self):
+        """
+        Starts and stops polling
+        """
         if not self.isPolling:
             self.pollingButton['text'] = "Stop polling"
             self.pollingButton['bg'] = "red"
@@ -219,7 +244,9 @@ class UI(Frame):
             self.pollingWatcher.stop()
 
     def start_polling_thread(self):
-
+        """
+        Starts polling thread
+        """
         namespath = self.classesLocation
         try:
             namespathfile = open("namespath.txt")
@@ -239,6 +266,9 @@ class UI(Frame):
         self.pollingWatcher.run()
 
     def start_analyse(self):
+        """
+        Starts Analyse
+        """
         print(self.dlg)
 
         # if pathlib.Path(self.dlg[0]).suffix.lower() == ".mp4":
@@ -254,9 +284,15 @@ class UI(Frame):
             analyse_thread_images.start()
 
     def append_text(self, string):
+        """
+        Append text to text box
+        """
         self.txt.insert(END, "\n" + string)
 
     def thread_start_weights(self):
+        """
+        Start load weights thread
+        """
 
         if self.classesFileEntry.get() == "" or self.weightsFileEntry.get() == "":
             print("no selected classes or weights")
@@ -268,6 +304,9 @@ class UI(Frame):
             t.start()
 
     def start_load_weights(self):
+        """
+        Loads weights
+        """
         try:
             self.txt.insert(END, "\nLoading weights...")
             load_weights.main(weights_file=self.weightsFileEntry.get(), class_names_file=self.classesFileEntry.get())
@@ -285,6 +324,9 @@ class UI(Frame):
             self.txt.insert(END, err)
 
     def analyse_images(self):
+        """
+        Analyse image
+        """
         namespath = self.get_names_path()
         try:
             self.txt.insert(END, "\nStarting image analysis...")
@@ -296,6 +338,9 @@ class UI(Frame):
             self.txt.insert(END, err)
 
     def analyse_video(self):
+        """
+        Analyse video
+        """
         namespath = self.get_names_path()
         try:
             self.txt.insert(END, "\nStarting video analysis...")
@@ -307,6 +352,9 @@ class UI(Frame):
             self.txt.insert(END, err)
 
     def get_names_path(self):
+        """
+        Gets name path from names path file
+        """
         try:
             names_path_file = open("namespath.txt")
             names_path = names_path_file.read()
@@ -318,6 +366,9 @@ class UI(Frame):
             return names_path
 
     def get_current_weights_path(self):
+        """
+        Gets last used weights path
+        """
         try:
             current_weights_file = open("currentweights.txt")
             current_weights_path = current_weights_file.read()
@@ -329,6 +380,9 @@ class UI(Frame):
             return current_weights_path
 
     def test(self):
+        """
+        test function
+        """
         if self.usePollingLocation:
             self.pollingSaveLocationButton.configure(state=DISABLED)
             print("this is test")
@@ -336,6 +390,9 @@ class UI(Frame):
             print("this is test")
 
     def disable_polling_save_location(self):
+        """
+        Disables the usage of custom save location in polling
+        """
         if self.usePollingLocation.get():
             self.pollingSaveLocationButton.configure(state=DISABLED)
             self.pollingSaveLocationEntry.configure(state=DISABLED)
@@ -348,6 +405,9 @@ class UI(Frame):
             print(self.pollingSaveLocationEntry.get())
 
     def disable_event(self):
+        """
+        Destroys Ui and stops polling
+        """
         if self.isPolling:
             self.pollingWatcher.stop()
             self.isPolling = False
