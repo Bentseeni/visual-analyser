@@ -7,6 +7,9 @@ import eventHandler
 
 
 class ImagesWatcher:
+    """
+    Watchdog observer
+    """
     def __init__(self, src_path, iou, confidence, names, create_csv, save_loc):
         eventHandler.lower_exit_flag()
         self.__src_path = src_path

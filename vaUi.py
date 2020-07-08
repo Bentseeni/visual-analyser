@@ -414,6 +414,9 @@ class UI(Frame):
         self.parent.destroy()
 
 def main():
+    """
+    Create Ui Window and start Ui mainloop
+    """
     root = Tk()
     ui = UI(root)
 
