@@ -258,8 +258,9 @@ class UI(Frame):
             namespathfile = open("namespath.txt")
             namespath = namespathfile.read()
             namespathfile.close()
-        except Exception:
-            self.txt.insert(END, "\nCouldn't read namespath.txt, using default .names")
+        except Exception as err:
+            self.append_text("Couldn't read namespath.txt, using default .names")
+            self.append_text(err)
         if self.usePollingLocation.get():
             self.pollingWatcher = watcher.ImagesWatcher(self.pollingLocationEntry.get(), float(self.iouEntry.get()),
                                                         float(self.confidenceEntry.get()), namespath,
@@ -293,7 +294,7 @@ class UI(Frame):
         """
         Append text to text box
         """
-        self.txt.insert(END, "\n" + string)
+        self.txt.insert(END, "\n" + str(string))
 
     def thread_start_weights(self):
         """
