@@ -47,9 +47,9 @@ class UI(Frame):
         self.openFileEntry.grid(row=0, column=0)
         self.openFileEntry.insert(0, os.getcwd())
 
-        self.saveFileEntry = Entry(self.parent, width=50)
-        self.saveFileEntry.grid(row=1, column=0)
-        self.saveFileEntry.insert(0, os.getcwd())
+        self.saveLocationEntry = Entry(self.parent, width=50)
+        self.saveLocationEntry.grid(row=1, column=0)
+        self.saveLocationEntry.insert(0, os.getcwd())
 
         self.weightsFileEntry = Entry(self.parent, width=50)
         self.weightsFileEntry.grid(row=2, column=0)
@@ -70,7 +70,8 @@ class UI(Frame):
         self.openButton = Button(self.parent, text="Open file", command=self.open_file)
         self.openButton.grid(row=0, column=1)
 
-        self.saveButton = Button(self.parent, text="Save location", command=self.select_save_location)
+        self.saveButton = Button(self.parent, text="Save location",
+                                 command=lambda: self.select_folder(self.saveLocationEntry))
         self.saveButton.grid(row=1, column=1)
 
         self.weightsFileButton = Button(self.parent, text="Weights location", command=self.select_weights)
@@ -79,11 +80,12 @@ class UI(Frame):
         self.classesFileButton = Button(self.parent, text="Classes location", command=self.select_classes)
         self.classesFileButton.grid(row=3, column=1)
 
-        self.pollingLocationButton = Button(self.parent, text="Polling location", command=self.select_polling_location)
+        self.pollingLocationButton = Button(self.parent, text="Polling location",
+                                            command=lambda: self.select_folder(self.pollingLocationEntry))
         self.pollingLocationButton.grid(row=10, column=1)
 
         self.pollingSaveLocationButton = Button(self.parent, text="Polling save location",
-                                                command=self.select_polling_save_location)
+                                                command=lambda: self.select_folder(self.pollingSaveLocationEntry))
         self.pollingSaveLocationButton.grid(row=12, column=1)
 
         self.iouEntry = Entry(self.parent, width=5)
@@ -192,38 +194,42 @@ class UI(Frame):
             csvfile.write('\n')
             csvwriter.writerow(class_names)
 
-    def select_save_location(self):
-        """
-        Select save location for analysed file
-        """
+    """def select_save_location(self):
         self.saveLocation = fd.askdirectory()
         if self.saveLocation == "":
             self.saveLocation = os.getcwd()
-        self.saveFileEntry.delete(0, END)
-        self.saveFileEntry.insert(0, self.saveLocation)
-        print(self.saveLocation)
+        self.saveLocationEntry.delete(0, END)
+        self.saveLocationEntry.insert(0, self.saveLocation)
+        print(self.saveLocation)"""
 
-    def select_polling_location(self):
-        """
-        Select location to start polling
-        """
+    """def select_polling_location(self):
         pollingLocation = fd.askdirectory()
         if pollingLocation == "":
             pollingLocation = os.getcwd()
         self.pollingLocationEntry.delete(0, END)
         self.pollingLocationEntry.insert(0, pollingLocation)
-        print(pollingLocation)
+        print(pollingLocation)"""
 
-    def select_polling_save_location(self):
+    def select_folder(self, entry):
         """
-        Select where polling feature saves analysed files
+        Select folder location and appends it to entry
+        :param entry: Entry widget
+        :return: None
         """
+        folderLocation = fd.askdirectory()
+        if folderLocation == "":
+            folderLocation = os.getcwd()
+        entry.delete(0, END)
+        entry.insert(0, folderLocation)
+        print(folderLocation)
+
+    """def select_polling_save_location(self):
         pollingSaveLocation = fd.askdirectory()
         if pollingSaveLocation == "":
             pollingSaveLocation = os.getcwd()
         self.pollingSaveLocationEntry.delete(0, END)
         self.pollingSaveLocationEntry.insert(0, pollingSaveLocation)
-        print(pollingSaveLocation)
+        print(pollingSaveLocation)"""
 
     def start_polling(self):
         """
@@ -330,7 +336,7 @@ class UI(Frame):
         namespath = self.get_names_path()
         try:
             self.txt.insert(END, "\nStarting image analysis...")
-            detect.main("images", self.dlg, self.saveLocation, float(self.iouEntry.get()),
+            detect.main("images", self.dlg, self.saveLocationEntry.get(), float(self.iouEntry.get()),
                         float(self.confidenceEntry.get()), namespath)
             self.txt.insert(END, "\nImage analysis ended successfully")
         except Exception as err:
@@ -344,7 +350,7 @@ class UI(Frame):
         namespath = self.get_names_path()
         try:
             self.txt.insert(END, "\nStarting video analysis...")
-            detect.main("video", self.dlg, self.saveLocation, float(self.iouEntry.get()),
+            detect.main("video", self.dlg, self.saveLocationEntry.get(), float(self.iouEntry.get()),
                         float(self.confidenceEntry.get()), namespath, self.createCsv.get())
             self.txt.insert(END, "\nVideo analysis ended successfully")
         except Exception as err:
