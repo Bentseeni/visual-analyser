@@ -247,7 +247,6 @@ def append_text(text, root, append_string):
     :param append_string: String to append
     :return: None
     """
-
     text.insert(END, "\n" + str(append_string))
     text.see(END)
     root.update()

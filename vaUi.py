@@ -32,7 +32,6 @@ class UI(Frame):
         Initialize user interface
         """
         self.parent.title("VA")
-        
 
         menubar = Menu(self.parent)
         self.parent.config(menu=menubar)
@@ -273,7 +272,8 @@ class UI(Frame):
                                                         self.pollingLocationEntry.get())
         else:
             self.pollingWatcher = watcher.ImagesWatcher(self.pollingLocationEntry.get(), float(self.iouEntry.get()),
-                                                        float(self.confidenceEntry.get()), namespath, self.createCsv.get(),
+                                                        float(self.confidenceEntry.get()), namespath,
+                                                        self.createCsv.get(),
                                                         self.pollingSaveLocationEntry.get())
         self.pollingWatcher.run()
 
@@ -309,7 +309,7 @@ class UI(Frame):
 
         if self.classesFileEntry.get() == "" or self.weightsFileEntry.get() == "":
             print("no selected classes or weights")
-            self.txt.insert(END, "\nno selected classes or weights")
+            self.append_text("no selected classes or weights")
 
             return
         else:
@@ -321,7 +321,7 @@ class UI(Frame):
         Loads weights
         """
         try:
-            self.txt.insert(END, "\nLoading weights...")
+            self.append_text("Loading weights...")
             load_weights.main(weights_file=self.weightsFileEntry.get(), class_names_file=self.classesFileEntry.get())
             names_path_file = open("namespath.txt", "w")
             names_path_file.write(self.classesFileEntry.get())
@@ -329,12 +329,12 @@ class UI(Frame):
             weights_path_file = open("currentweights.txt", "w")
             weights_path_file.write(self.weightsFileEntry.get())
             weights_path_file.close()
-            self.txt.insert(END, "\nWeights loaded")
+            self.append_text("Weights loaded")
             self.weightsLabel['text'] = os.path.basename(self.weightsFileEntry.get())
             self.classesLabel['text'] = os.path.basename(self.classesFileEntry.get())
         except Exception as err:
-            self.txt.insert(END, "\nerror loading weights")
-            self.txt.insert(END, err)
+            self.append_text("error loading weights")
+            print(err)
 
     def analyse_images(self):
         """
@@ -342,13 +342,13 @@ class UI(Frame):
         """
         namespath = self.get_names_path()
         try:
-            self.txt.insert(END, "\nStarting image analysis...")
+            self.append_text("Starting image analysis...")
             detect.main("images", self.dlg, self.saveLocationEntry.get(), float(self.iouEntry.get()),
                         float(self.confidenceEntry.get()), namespath)
-            self.txt.insert(END, "\nImage analysis ended successfully")
+            self.append_text("Image analysis ended successfully")
         except Exception as err:
-            self.txt.insert(END, "\nerror in image analysis")
-            self.txt.insert(END, err)
+            self.append_text("error in image analysis")
+            print(err)
 
     def analyse_video(self):
         """
@@ -356,13 +356,13 @@ class UI(Frame):
         """
         namespath = self.get_names_path()
         try:
-            self.txt.insert(END, "\nStarting video analysis...")
+            self.append_text("Starting video analysis...")
             detect.main("video", self.dlg, self.saveLocationEntry.get(), float(self.iouEntry.get()),
                         float(self.confidenceEntry.get()), namespath, self.createCsv.get())
-            self.txt.insert(END, "\nVideo analysis ended successfully")
+            self.append_text("Video analysis ended successfully")
         except Exception as err:
-            self.txt.insert(END, "\nerror in video analysis")
-            self.txt.insert(END, err)
+            self.append_text("error in video analysis")
+            self.append_text(err)
 
     def get_names_path(self):
         """
@@ -372,8 +372,9 @@ class UI(Frame):
             names_path_file = open("namespath.txt")
             names_path = names_path_file.read()
             names_path_file.close()
-        except Exception:
-            self.txt.insert(END, "\nCouldn't read namespath.txt, using default .names")
+        except Exception as err:
+            self.append_text("Couldn't read namespath.txt, using default .names")
+            print(err)
             names_path = self.classesLocation
         finally:
             return names_path
@@ -386,8 +387,9 @@ class UI(Frame):
             current_weights_file = open("currentweights.txt")
             current_weights_path = current_weights_file.read()
             current_weights_file.close()
-        except Exception:
-            self.txt.insert(END, "\nCouldn't read currentweights.txt")
+        except Exception as err:
+            self.append_text("Couldn't read currentweights.txt")
+            print(err)
             current_weights_path = "default/unknown"
         finally:
             return current_weights_path
@@ -426,6 +428,7 @@ class UI(Frame):
             self.isPolling = False
         self.parent.destroy()
 
+
 def main():
     """
     Create Ui Window and start Ui mainloop
@@ -436,8 +439,6 @@ def main():
     root.protocol("WM_DELETE_WINDOW", ui.disable_event)
     root.geometry("860x510+300+300")
     root.mainloop()
-
-
 
 
 if __name__ == '__main__':
