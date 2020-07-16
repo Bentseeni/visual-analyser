@@ -1,6 +1,8 @@
 import os
 from tkinter import *
 from tkinter import filedialog as fd
+import tkinter.ttk as ttk
+from tkinter.ttk import *
 import load_weights
 import threading
 import pathlib
@@ -99,11 +101,13 @@ class UI(Frame):
         self.loadWeightsButton = Button(self.parent, text="Load Weights", command=self.thread_start_weights)
         self.loadWeightsButton.grid(row=4, column=0, padx=5, pady=5)
 
-        self.analyseButton = Button(self.parent, text="Analyse", command=self.start_analyse, bg=self.green, height=3,
-                                    width=20)
-        self.analyseButton.grid(row=8, column=0, padx=5, pady=5)
+        self.analyseButton = Button(self.parent, text="Analyse", command=self.start_analyse, style="G.TButton")
+        # background=self.green, height=3, width=20
+        self.analyseButton.grid(row=8, column=0, padx=5, pady=5, ipady=10)
+        print(self.analyseButton.winfo_class())
 
-        self.pollingButton = Button(self.parent, text="Start polling", command=self.start_polling, bg='#b828ae')
+        self.pollingButton = Button(self.parent, text="Start polling", command=self.start_polling, style="P.TButton")
+        # bg='#b828ae'
         self.pollingButton.grid(row=13, column=0, padx=5, pady=5)
 
         self.txt = Text(self.parent, height=30, width=50)
@@ -116,11 +120,11 @@ class UI(Frame):
         self.weightsLocation = self.get_current_weights_path()
         self.classesLocation = self.get_names_path()
 
-        self.weightsLabel = Label(self.parent, text=os.path.basename(self.weightsLocation), width=37)
-        self.weightsLabel.grid(row=5, column=0, sticky=W, padx=5, pady=5)
+        self.weightsLabel = Label(self.parent, text=os.path.basename(self.weightsLocation), width=37, anchor=CENTER)
+        self.weightsLabel.grid(row=5, column=0, padx=5, pady=5)
 
-        self.classesLabel = Label(self.parent, text=os.path.basename(self.classesLocation), width=37)
-        self.classesLabel.grid(row=6, column=0, sticky=W, padx=5, pady=5)
+        self.classesLabel = Label(self.parent, text=os.path.basename(self.classesLocation), width=37, anchor=CENTER)
+        self.classesLabel.grid(row=6, column=0, padx=5, pady=5)
 
         self.iouLbl = Label(self.parent, text="iou")
         self.iouLbl.grid(row=5, column=1, padx=5, pady=5)
@@ -241,14 +245,14 @@ class UI(Frame):
         """
         if not self.isPolling:
             self.pollingButton['text'] = "Stop polling"
-            self.pollingButton['bg'] = "red"
+            self.pollingButton['style'] = "R.TButton"
             self.append_text("Polling started in location:\n" + self.pollingLocationEntry.get())
             self.isPolling = True
             polling_thread = threading.Thread(target=self.start_polling_thread)
             polling_thread.start()
         elif self.isPolling:
             self.pollingButton['text'] = "Start polling"
-            self.pollingButton['bg'] = '#b828ae'
+            self.pollingButton['style'] = 'P.TButton'
             self.append_text("Polling stopped")
             self.isPolling = False
             self.pollingWatcher.stop()
@@ -294,6 +298,8 @@ class UI(Frame):
             print(pathlib.Path(self.dlg[0]).suffix)
             analyse_thread_images = threading.Thread(target=self.analyse_images)
             analyse_thread_images.start()
+        else:
+            self.append_text("Selected file or files are not supported")
 
     def append_text(self, string):
         """
@@ -434,12 +440,19 @@ def main():
     Create Ui Window and start Ui mainloop
     """
     root = Tk()
+
     ui = UI(root)
+    s = ttk.Style()
+    s.theme_use('vista')
+    s.configure("G.TButton", background="#32a62e", width=20)
+    s.configure("P.TButton", background='#b828ae')
+    s.configure("R.TButton", background="red")
+
+    print(s.theme_names())
 
     root.protocol("WM_DELETE_WINDOW", ui.disable_event)
     root.geometry("860x510+300+300")
     root.mainloop()
-
 
 if __name__ == '__main__':
     main()
