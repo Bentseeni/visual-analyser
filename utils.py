@@ -50,6 +50,7 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
     Returns:
         None.
     """
+    analyser_config = load_json()
     colors = ((np.array(color_palette("hls", 80)) * 255)).astype(np.uint8)
     for num, img_name, boxes_dict in zip(range(len(img_names)), img_names,
                                          boxes_dicts):
@@ -98,13 +99,31 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
                 draw.text((0, curr_txt_y_pos),
                           number_obj_txt, fill='white', font=font, stroke_width=(img.size[0] + img.size[1]) // 2000, stroke_fill='#FF00AF')
                 #print(txt_size[1])
-        rgb_img = img.convert('RGB')
-        #print("afterimgconvert")
-        input_name_base = os.path.basename(img_name)
 
+        # Print additional texts
+        additional_text = ''
+        if analyser_config['printIou']:
+            additional_text += "\n" + "IOU: " + analyser_config['iou']
+        if analyser_config['printConfidence']:
+            additional_text += "\n" + "Confidence: " + analyser_config['confidence']
+        if analyser_config['printNamesPath']:
+            additional_text += "\n" + analyser_config['namesPath']
+        if analyser_config['printWeightPath']:
+            additional_text += "\n" + analyser_config['weightsPath']
+
+        if additional_text is not '':
+            add_font = ImageFont.truetype(font='./data/fonts/futur.ttf',
+                                      size=(img.size[0] + img.size[1]) // 200)
+            add_txt_size = draw.multiline_textsize(additional_text, font=add_font, spacing=1, stroke_width=(img.size[0] + img.size[1]) // 2000)
+            draw.multiline_text((0, img.size[1] - add_txt_size[1]),
+                                additional_text, fill='white', font=add_font, spacing=1, stroke_width=(img.size[0] + img.size[1]) // 2000,
+                                stroke_fill='#FF00AF')
+
+        # Convert image to RGB and save it to folder
+        rgb_img = img.convert('RGB')
+        input_name_base = os.path.basename(img_name)
         #rgb_img.save(save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.jpg')
         rgb_img.save(save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed' + os.path.splitext(input_name_base)[1])
-        #print("afterimgsave")
         # rgb_img.save(save_folder + '/' + str(num + 1) + '.jpg')
 
 
@@ -119,6 +138,9 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
     Returns:
         None.
     """
+    analyser_config = load_json()
+
+
     boxes_dict = boxes_dicts[0]
     resize_factor = (frame_size[0] / model_size[1], frame_size[1] / model_size[0])
     colors = ((np.array(color_palette("hls", 80)) * 255)).astype(np.uint8)
@@ -152,6 +174,30 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
             cv2.putText(frame, number_obj_txt, (1, curr_cls_number * text_height + 1),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1)
 
+    # Print additional info
+
+    number_of_additional_prints = 0
+
+    if analyser_config['printWeightPath']:
+        number_of_additional_prints += 1
+        additional_text = analyser_config['weightsPath']
+        draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints)
+
+    if analyser_config['printNamesPath']:
+        number_of_additional_prints += 1
+        additional_text = analyser_config['namesPath']
+        draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints)
+
+    if analyser_config['printConfidence']:
+        number_of_additional_prints += 1
+        additional_text = "Confidence: " + analyser_config['confidence']
+        draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints)
+
+    if analyser_config['printIou']:
+        number_of_additional_prints += 1
+        additional_text = "IOU: " + analyser_config['iou']
+        draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints)
+
 
 def load_json():
     config_location = 'config.json'
@@ -174,3 +220,13 @@ def load_json():
         }
         json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
         return config
+
+
+def draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints):
+    (test_width, text_height), baseline = cv2.getTextSize(additional_text,
+                                                          cv2.FONT_HERSHEY_SIMPLEX,
+                                                          0.5, 1)
+    cv2.putText(frame, additional_text, (0, int(frame_size[1]) - number_of_additional_prints * text_height),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 180), 2, bottomLeftOrigin=False)
+    cv2.putText(frame, additional_text, (1, int(frame_size[1]) - number_of_additional_prints * text_height + 1),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, bottomLeftOrigin=False)
