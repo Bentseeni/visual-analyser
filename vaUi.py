@@ -173,28 +173,32 @@ class UI(Frame):
                                           offvalue=False)
         self.csvCheckButton.grid(row=0, column=0, padx=5, pady=5, sticky=W)
 
-        self.printClasses = BooleanVar()
+        self.printClasses = self.analyser_config.get("printClasses")
         self.printClassesCheckButton = Checkbutton(self.tab2, text="Print Classes", variable=self.printClasses,
                                                    onvalue=True, offvalue=False)
         self.printClassesCheckButton.grid(row=1, column=0, padx=5, pady=5, sticky=W)
+        #if self.printClasses:
+        #   self.printClassesCheckButton.select()
+        #else:
+        #    self.printClassesCheckButton.deselect()
 
         self.printIou = BooleanVar()
-        self.printIouCheckButton = Checkbutton(self.tab2, text="Print Iou", variable=self.printClasses,
+        self.printIouCheckButton = Checkbutton(self.tab2, text="Print Iou", variable=self.printIou,
                                                    onvalue=True, offvalue=False)
         self.printIouCheckButton.grid(row=2, column=0, padx=5, pady=5, sticky=W)
 
         self.printConfidence = BooleanVar()
-        self.printConfidenceCheckButton = Checkbutton(self.tab2, text="Print Confidence", variable=self.printClasses,
+        self.printConfidenceCheckButton = Checkbutton(self.tab2, text="Print Confidence", variable=self.printConfidence,
                                                onvalue=True, offvalue=False)
         self.printConfidenceCheckButton.grid(row=3, column=0, padx=5, pady=5, sticky=W)
 
         self.printNamesPath = BooleanVar()
-        self.printNamesPathCheckButton = Checkbutton(self.tab2, text="Print Names Path", variable=self.printClasses,
+        self.printNamesPathCheckButton = Checkbutton(self.tab2, text="Print Names Path", variable=self.printNamesPath,
                                            onvalue=True, offvalue=False)
         self.printNamesPathCheckButton.grid(row=4, column=0, padx=5, pady=5, sticky=W)
 
         self.printWeightsPath = BooleanVar()
-        self.printWeightsPathCheckButton = Checkbutton(self.tab2, text="Print Weights Path", variable=self.printClasses,
+        self.printWeightsPathCheckButton = Checkbutton(self.tab2, text="Print Weights Path", variable=self.printWeightsPath,
                                                      onvalue=True, offvalue=False)
         self.printWeightsPathCheckButton.grid(row=5, column=0, padx=5, pady=5, sticky=W)
 
