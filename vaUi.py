@@ -71,100 +71,135 @@ class UI(Frame):
         file_menu.add_command(label="Test", command=self.test)
         menubar.add_cascade(label="File", menu=file_menu)
 
-        self.openFileEntry = Entry(self.parent, width=50)
+        self.tabControl = Notebook(self.parent)
+        self.tab1 = Frame(self.tabControl)
+        self.tab2 = Frame(self.tabControl)
+        self.tabControl.add(self.tab1, text="Analyse")
+        self.tabControl.add(self.tab2, text="Options")
+        self.tabControl.pack(expand=1, fill="both")
+
+        self.openFileEntry = Entry(self.tab1, width=50)
         self.openFileEntry.grid(row=0, column=0, padx=5, pady=5)
         self.openFileEntry.insert(0, os.getcwd())
 
-        self.saveLocationEntry = Entry(self.parent, width=50)
+        self.saveLocationEntry = Entry(self.tab1, width=50)
         self.saveLocationEntry.grid(row=1, column=0, padx=5, pady=5)
         self.saveLocationEntry.insert(0, os.getcwd())
 
-        self.weightsFileEntry = Entry(self.parent, width=50)
+        self.weightsFileEntry = Entry(self.tab1, width=50)
         self.weightsFileEntry.grid(row=2, column=0, padx=5, pady=5)
         self.weightsFileEntry.insert(0, self.weightsLocation)
 
-        self.classesFileEntry = Entry(self.parent, width=50)
+        self.classesFileEntry = Entry(self.tab1, width=50)
         self.classesFileEntry.grid(row=3, column=0, padx=5, pady=5)
         self.classesFileEntry.insert(0, self.classesLocation)
 
-        self.pollingLocationEntry = Entry(self.parent, width=50)
+        self.pollingLocationEntry = Entry(self.tab1, width=50)
         self.pollingLocationEntry.grid(row=10, column=0, pady=10)
         self.pollingLocationEntry.insert(0, os.getcwd())
 
-        self.pollingSaveLocationEntry = Entry(self.parent, width=50)
+        self.pollingSaveLocationEntry = Entry(self.tab1, width=50)
         self.pollingSaveLocationEntry.grid(row=12, column=0, pady=5)
         self.pollingSaveLocationEntry.insert(0, os.getcwd())
 
-        self.openButton = Button(self.parent, text="Open file", command=self.open_file)
+        self.openButton = Button(self.tab1, text="Open file", command=self.open_file)
         self.openButton.grid(row=0, column=1, padx=5, pady=5)
 
-        self.saveButton = Button(self.parent, text="Save location",
+        self.saveButton = Button(self.tab1, text="Save location",
                                  command=lambda: self.select_folder(self.saveLocationEntry))
         self.saveButton.grid(row=1, column=1, padx=5, pady=5)
 
-        self.weightsFileButton = Button(self.parent, text="Weights location", command=self.select_weights)
+        self.weightsFileButton = Button(self.tab1, text="Weights location", command=self.select_weights)
         self.weightsFileButton.grid(row=2, column=1, padx=5, pady=5)
 
-        self.classesFileButton = Button(self.parent, text="Classes location", command=self.select_classes)
+        self.classesFileButton = Button(self.tab1, text="Classes location", command=self.select_classes)
         self.classesFileButton.grid(row=3, column=1, padx=5, pady=5)
 
-        self.pollingLocationButton = Button(self.parent, text="Polling location",
+        self.pollingLocationButton = Button(self.tab1, text="Polling location",
                                             command=lambda: self.select_folder(self.pollingLocationEntry))
         self.pollingLocationButton.grid(row=10, column=1, padx=5, pady=5)
 
-        self.pollingSaveLocationButton = Button(self.parent, text="Polling save location",
+        self.pollingSaveLocationButton = Button(self.tab1, text="Polling save location",
                                                 command=lambda: self.select_folder(self.pollingSaveLocationEntry))
         self.pollingSaveLocationButton.grid(row=12, column=1, padx=5, pady=5)
 
-        self.iouEntry = Entry(self.parent, width=5)
+        self.iouEntry = Entry(self.tab1, width=5)
         self.iouEntry.grid(row=5, column=0, sticky=E, padx=5, pady=5)
         self.iouEntry.insert(0, "0.5")
 
-        self.confidenceEntry = Entry(self.parent, width=5, text=0.5)
+        self.confidenceEntry = Entry(self.tab1, width=5, text=0.5)
         self.confidenceEntry.grid(row=6, column=0, sticky=E, padx=5, pady=5)
         self.confidenceEntry.insert(0, "0.5")
 
-        self.loadWeightsButton = Button(self.parent, text="Load Weights", command=self.thread_start_weights)
+        self.loadWeightsButton = Button(self.tab1, text="Load Weights", command=self.thread_start_weights)
         self.loadWeightsButton.grid(row=4, column=0, padx=5, pady=5)
 
-        self.analyseButton = Button(self.parent, text="Analyse", command=self.start_analyse, style="G.TButton")
+        self.analyseButton = Button(self.tab1, text="Analyse", command=self.start_analyse, style="G.TButton")
         # background=self.green, height=3, width=20
         self.analyseButton.grid(row=8, column=0, padx=5, pady=5, ipady=10)
         print(self.analyseButton.winfo_class())
 
-        self.pollingButton = Button(self.parent, text="Start polling", command=self.start_polling, style="P.TButton")
+        self.pollingButton = Button(self.tab1, text="Start polling", command=self.start_polling, style="P.TButton")
         # bg='#b828ae'
         self.pollingButton.grid(row=13, column=0, padx=5, pady=5)
 
-        self.txt = Text(self.parent, height=30, width=50)
+        self.saveSettingsButton = Button(self.tab2, text="Save settings", command=self.save_json)
+        self.saveSettingsButton.grid(row=6, column=0, padx=5, pady=5)
+
+        self.txt = Text(self.tab1, height=30, width=50)
         self.txt.grid(row=0, column=2, pady=5, rowspan=16, padx=5)
 
-        self.vsb = Scrollbar(self.parent, orient="vertical", command=self.txt.yview)
+        self.vsb = Scrollbar(self.tab1, orient="vertical", command=self.txt.yview)
         self.vsb.grid(row=0, column=2, sticky="nse", rowspan=16, padx=5, pady=5)
         self.txt.configure(yscrollcommand=self.vsb.set)
 
         self.weightsLocation = self.get_current_weights_path()
         self.classesLocation = self.get_names_path()
 
-        self.weightsLabel = Label(self.parent, text=os.path.basename(self.weightsLocation), width=37, anchor=CENTER)
+        self.weightsLabel = Label(self.tab1, text=os.path.basename(self.weightsLocation), width=37, anchor=CENTER)
         self.weightsLabel.grid(row=5, column=0, padx=5, pady=5)
 
-        self.classesLabel = Label(self.parent, text=os.path.basename(self.classesLocation), width=37, anchor=CENTER)
+        self.classesLabel = Label(self.tab1, text=os.path.basename(self.classesLocation), width=37, anchor=CENTER)
         self.classesLabel.grid(row=6, column=0, padx=5, pady=5)
 
-        self.iouLbl = Label(self.parent, text="iou")
+        self.iouLbl = Label(self.tab1, text="iou")
         self.iouLbl.grid(row=5, column=1, padx=5, pady=5)
 
-        self.confidenceLbl = Label(self.parent, text="confidence")
+        self.confidenceLbl = Label(self.tab1, text="confidence")
         self.confidenceLbl.grid(row=6, column=1, padx=5, pady=5)
 
         self.createCsv = BooleanVar()
-        self.csvCheckButton = Checkbutton(self.parent, text="Create CSV", variable=self.createCsv, onvalue=True,
+        self.csvCheckButton = Checkbutton(self.tab2, text="Create CSV", variable=self.createCsv, onvalue=True,
                                           offvalue=False)
-        self.csvCheckButton.grid(row=7, column=0, columnspan=2, sticky=E, padx=30, pady=5)
+        self.csvCheckButton.grid(row=0, column=0, padx=5, pady=5, sticky=W)
+
+        self.printClasses = BooleanVar()
+        self.printClassesCheckButton = Checkbutton(self.tab2, text="Print Classes", variable=self.printClasses,
+                                                   onvalue=True, offvalue=False)
+        self.printClassesCheckButton.grid(row=1, column=0, padx=5, pady=5, sticky=W)
+
+        self.printIou = BooleanVar()
+        self.printIouCheckButton = Checkbutton(self.tab2, text="Print Iou", variable=self.printClasses,
+                                                   onvalue=True, offvalue=False)
+        self.printIouCheckButton.grid(row=2, column=0, padx=5, pady=5, sticky=W)
+
+        self.printConfidence = BooleanVar()
+        self.printConfidenceCheckButton = Checkbutton(self.tab2, text="Print Confidence", variable=self.printClasses,
+                                               onvalue=True, offvalue=False)
+        self.printConfidenceCheckButton.grid(row=3, column=0, padx=5, pady=5, sticky=W)
+
+        self.printNamesPath = BooleanVar()
+        self.printNamesPathCheckButton = Checkbutton(self.tab2, text="Print Names Path", variable=self.printClasses,
+                                           onvalue=True, offvalue=False)
+        self.printNamesPathCheckButton.grid(row=4, column=0, padx=5, pady=5, sticky=W)
+
+        self.printWeightsPath = BooleanVar()
+        self.printWeightsPathCheckButton = Checkbutton(self.tab2, text="Print Weights Path", variable=self.printClasses,
+                                                     onvalue=True, offvalue=False)
+        self.printWeightsPathCheckButton.grid(row=5, column=0, padx=5, pady=5, sticky=W)
 
         self.usePollingLocation = BooleanVar()
-        self.PollingCheckButton = Checkbutton(self.parent, text="Use polling location for saving",
+        self.PollingCheckButton = Checkbutton(self.tab1, text="Use polling location for saving",
                                               variable=self.usePollingLocation, onvalue=True, offvalue=False,
                                               command=self.disable_polling_save_location)
         self.PollingCheckButton.grid(row=11, column=0, columnspan=2, sticky=E, padx=5, pady=5)
@@ -488,14 +523,13 @@ def main():
     ui = UI(root)
     s = ttk.Style()
     s.theme_use('vista')
-    s.configure("G.TButton", background="#32a62e", width=20)
+    s.configure("G.TButton", background="#32a62e")
     s.configure("P.TButton", background='#b828ae')
     s.configure("R.TButton", background="red")
-
+    s.configure("B.TFrame", bacground="red")
     print(s.theme_names())
-
     root.protocol("WM_DELETE_WINDOW", ui.disable_event)
-    root.geometry("860x510+300+300")
+    root.geometry("860x520+300+300")
     root.mainloop()
 
 if __name__ == '__main__':
