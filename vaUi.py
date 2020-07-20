@@ -10,6 +10,30 @@ import detect
 import watcher
 import utils
 import csv
+import json
+
+
+def load_json():
+    config_location = 'config.json'
+
+    if os.path.exists(config_location):
+        config = json.load(open(config_location))
+        return config
+    else:
+        config = {
+            'printClasses': True,
+            'printIou': False,
+            'printConfidence': False,
+            'printNamesPath': False,
+            'printWeightPath': False,
+            'createCsv': False,
+            'namesPath': './data/labels/coco.names',
+            'weightsPath': './weights/yolov3.weights',
+            'iou': '0.5',
+            'confidence': '0.5'
+        }
+        json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
+        return config
 
 
 class UI(Frame):
@@ -21,6 +45,8 @@ class UI(Frame):
     video_extensions = [".mp4", ".mov", ".avi", ".flv", ".mkv", ".webm", ".wmv", ".gif"]
     image_extensions = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".tga", ".webp"]
     isPolling = False
+    analyser_config = load_json()
+    # print(analyser_config)
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
@@ -433,6 +459,24 @@ class UI(Frame):
             self.pollingWatcher.stop()
             self.isPolling = False
         self.parent.destroy()
+
+    def save_json(self):
+        config_location = 'config.json'
+
+        config = {
+            'printClasses': True,
+            'printIou': False,
+            'printConfidence': False,
+            'printNamesPath': False,
+            'printWeightPath': False,
+            'createCsv': False,
+            'namesPath': './data/labels/coco.names',
+            'weightsPath': './weights/yolov3.weights',
+            'iou': '0.5',
+            'confidence': '0.5'
+        }
+        json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
+        return config
 
 
 def main():

@@ -5,6 +5,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from seaborn import color_palette
 import cv2
+import json
 
 
 def load_images(img_names, model_size):
@@ -42,9 +43,10 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
     """Draws detected boxes.
     Args:
         img_names: A list of input images names.
-        boxes_dict: A class-to-boxes dictionary.
+        boxes_dicts: A class-to-boxes dictionary.
         class_names: A class names list.
         model_size: The input size of the model.
+        save_folder: Folder where output images are to be saved.
     Returns:
         None.
     """
@@ -149,3 +151,26 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
                         cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 180), 2)
             cv2.putText(frame, number_obj_txt, (1, curr_cls_number * text_height + 1),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1)
+
+
+def load_json():
+    config_location = 'config.json'
+
+    if os.path.exists(config_location):
+        config = json.load(open(config_location))
+        return config
+    else:
+        config = {
+            'printClasses': True,
+            'printIou': False,
+            'printConfidence': False,
+            'printNamesPath': False,
+            'printWeightPath': False,
+            'createCsv': False,
+            'namesPath': './data/labels/coco.names',
+            'weightsPath': './weights/yolov3.weights',
+            'iou': '0.5',
+            'confidence': '0.5'
+        }
+        json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
+        return config
