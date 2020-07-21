@@ -88,17 +88,18 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
                               font=font)
                     print('{} {:.2f}%'.format(class_names[cls],
                                               confidence * 100))
-                number_obj_txt = class_names[cls] + ": " + str(number_of_obj_for_cls)
-                txt_size = draw.textsize(number_obj_txt, font=font)
-                # draw.text((0, curr_cls_number * txt_size[1] * 2),
-                #        number_obj_txt, fill='green', font=font)
-                curr_txt_y_pos += txt_size[1] + 1
-                #draw.rectangle(
-                #    [0, curr_txt_y_pos, txt_size[0], curr_txt_y_pos + txt_size[1]],
-                #    fill=tuple(color))
-                draw.text((0, curr_txt_y_pos),
-                          number_obj_txt, fill='white', font=font, stroke_width=(img.size[0] + img.size[1]) // 2000, stroke_fill='#FF00AF')
-                #print(txt_size[1])
+                if analyser_config['printClasses']:
+                    number_obj_txt = class_names[cls] + ": " + str(number_of_obj_for_cls)
+                    txt_size = draw.textsize(number_obj_txt, font=font)
+                    # draw.text((0, curr_cls_number * txt_size[1] * 2),
+                    #        number_obj_txt, fill='green', font=font)
+                    curr_txt_y_pos += txt_size[1] + 1
+                    #draw.rectangle(
+                    #    [0, curr_txt_y_pos, txt_size[0], curr_txt_y_pos + txt_size[1]],
+                    #    fill=tuple(color))
+                    draw.text((0, curr_txt_y_pos),
+                              number_obj_txt, fill='white', font=font, stroke_width=(img.size[0] + img.size[1]) // 2000, stroke_fill='#FF00AF')
+                    #print(txt_size[1])
 
         # Print additional texts
         additional_text = ''
@@ -165,14 +166,16 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
                               color[::-1], thickness=cv2.FILLED)
                 cv2.putText(frame, class_names[cls], (xy[0], xy[1] - baseline),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 0), 1)
-            (test_width, text_height), baseline = cv2.getTextSize(class_names[cls],
-                                                                  cv2.FONT_HERSHEY_SIMPLEX,
-                                                                  0.75, 1)
-            number_obj_txt = class_names[cls] + ": " + str(number_of_obj_for_cls)
-            cv2.putText(frame, number_obj_txt, (0, curr_cls_number * text_height),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 180), 2)
-            cv2.putText(frame, number_obj_txt, (1, curr_cls_number * text_height + 1),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1)
+
+            if analyser_config['printClasses']:
+                (test_width, text_height), baseline = cv2.getTextSize(class_names[cls],
+                                                                      cv2.FONT_HERSHEY_SIMPLEX,
+                                                                      0.75, 1)
+                number_obj_txt = class_names[cls] + ": " + str(number_of_obj_for_cls)
+                cv2.putText(frame, number_obj_txt, (0, curr_cls_number * text_height),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 180), 2)
+                cv2.putText(frame, number_obj_txt, (1, curr_cls_number * text_height + 1),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1)
 
     # Print additional info
 
