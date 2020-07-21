@@ -25,7 +25,7 @@ def load_json():
             'printIou': False,
             'printConfidence': False,
             'printNamesPath': False,
-            'printWeightPath': False,
+            'printWeightsPath': False,
             'createCsv': False,
             'namesPath': './data/labels/coco.names',
             'weightsPath': './weights/yolov3.weights',
@@ -173,14 +173,14 @@ class UI(Frame):
         self.csvCheckButton = Checkbutton(self.tab2, text="Create CSV", variable=self.createCsv, onvalue=True,
                                           offvalue=False)
         self.csvCheckButton.grid(row=0, column=0, padx=5, pady=5, sticky=W)
-        self.createCsv = self.analyser_config.get("createCsv")
+        self.createCsv.set(self.analyser_config.get("createCsv"))
         self.toggle_checkbutton(self.csvCheckButton, self.createCsv)
 
         self.printClasses = BooleanVar()
         self.printClassesCheckButton = Checkbutton(self.tab2, text="Print Classes", variable=self.printClasses,
                                                    onvalue=True, offvalue=False)
         self.printClassesCheckButton.grid(row=1, column=0, padx=5, pady=5, sticky=W)
-        self.printClasses = self.analyser_config.get("printClasses")
+        self.printClasses.set(self.analyser_config.get("printClasses"))
         self.toggle_checkbutton(self.printClassesCheckButton, self.printClasses)
 
 
@@ -188,28 +188,28 @@ class UI(Frame):
         self.printIouCheckButton = Checkbutton(self.tab2, text="Print Iou", variable=self.printIou,
                                                    onvalue=True, offvalue=False)
         self.printIouCheckButton.grid(row=2, column=0, padx=5, pady=5, sticky=W)
-        self.printIou = self.analyser_config.get("printIou")
+        self.printIou.set(self.analyser_config.get("printIou"))
         self.toggle_checkbutton(self.printIouCheckButton, self.printIou)
 
         self.printConfidence = BooleanVar()
         self.printConfidenceCheckButton = Checkbutton(self.tab2, text="Print Confidence", variable=self.printConfidence,
                                                onvalue=True, offvalue=False)
         self.printConfidenceCheckButton.grid(row=3, column=0, padx=5, pady=5, sticky=W)
-        self.printConfidence = self.analyser_config.get("printConfidence")
+        self.printConfidence.set(self.analyser_config.get("printConfidence"))
         self.toggle_checkbutton(self.printConfidenceCheckButton, self.printConfidence)
 
         self.printNamesPath = BooleanVar()
         self.printNamesPathCheckButton = Checkbutton(self.tab2, text="Print Names Path", variable=self.printNamesPath,
                                            onvalue=True, offvalue=False)
         self.printNamesPathCheckButton.grid(row=4, column=0, padx=5, pady=5, sticky=W)
-        self.printNamesPath = self.analyser_config.get("printNamesPath")
+        self.printNamesPath.set(self.analyser_config.get("printNamesPath"))
         self.toggle_checkbutton(self.printNamesPathCheckButton, self.printNamesPath)
 
         self.printWeightsPath = BooleanVar()
         self.printWeightsPathCheckButton = Checkbutton(self.tab2, text="Print Weights Path", variable=self.printWeightsPath,
                                                      onvalue=True, offvalue=False)
         self.printWeightsPathCheckButton.grid(row=5, column=0, padx=5, pady=5, sticky=W)
-        self.printWeightsPath = self.analyser_config.get("printWeightPath")
+        self.printWeightsPath.set(self.analyser_config.get("printWeightsPath"))
         self.toggle_checkbutton(self.printWeightsPathCheckButton, self.printWeightsPath)
 
         self.usePollingLocation = BooleanVar()
@@ -270,7 +270,7 @@ class UI(Frame):
         class_names.insert(0, "frame")
         print(class_names)
         filename = "test_file.csv"
-        print(self.createCsv.get())
+        #print(self.csvCheckButton.state())
         with open(filename, 'w') as csvfile:
             csvwriter = csv.writer(csvfile)
             csvfile.write("sep=,")
@@ -514,8 +514,9 @@ class UI(Frame):
         self.parent.destroy()
 
     def toggle_checkbutton(self, checkbutton, stateVariable):
-        checkbutton.invoke()
-        if stateVariable:
+        #checkbutton.invoke()
+        checkbutton.state(['!alternate'])
+        if stateVariable.get():
             checkbutton.state(['selected'])
         else:
             checkbutton.state(['!selected'])
@@ -524,19 +525,18 @@ class UI(Frame):
     def save_options_json(self):
         config_location = 'config.json'
 
-        config = {
-            'printClasses': True,
-            'printIou': True,
-            'printConfidence': False,
-            'printNamesPath': False,
-            'printWeightPath': True,
-            'createCsv': False,
-            'namesPath': './data/labels/coco.names',
-            'weightsPath': './weights/yolov3.weights',
-            'iou': '0.5',
-            'confidence': '0.5'
-        }
+        if os.path.exists(config_location):
+            config = json.load(open(config_location))
+
+        config['printClasses'] = self.printClasses.get()
+        config['printIou'] = self.printIou.get()
+        config['printConfidence'] = self.printConfidence.get()
+        config['printNamesPath'] = self.printNamesPath.get()
+        config['printWeightsPath'] = self.printWeightsPath.get()
+        config['createCsv'] = self.createCsv.get()
+
         json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
+        self.analyser_config = config
         return config
 
     def save_paths_json(self):
