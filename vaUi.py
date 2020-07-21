@@ -438,7 +438,7 @@ class UI(Frame):
         """
         Analyse video
         """
-        self.save_paths_json()
+        self.save_threshold_json()
         namespath = self.get_names_path()
         try:
             self.append_text("Starting video analysis...")
@@ -558,10 +558,11 @@ class UI(Frame):
 
     def save_threshold_json(self):
         config_location = 'config.json'
+
         if os.path.exists(config_location):
             config = json.load(open(config_location))
-        config['namesPath'] = self.classesFileEntry.get()
-        config['weightsPath'] = self.weightsFileEntry.get()
+        config['iou'] = self.iouEntry.get()
+        config['confidence'] = self.confidenceEntry.get()
         # config = {
         #     'iou': self.iouEntry.get(),
         #     'confidence': self.confidenceEntry.get()
