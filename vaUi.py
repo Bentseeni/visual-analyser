@@ -168,39 +168,49 @@ class UI(Frame):
         self.confidenceLbl = Label(self.tab1, text="confidence")
         self.confidenceLbl.grid(row=6, column=1, padx=5, pady=5)
 
+
         self.createCsv = BooleanVar()
         self.csvCheckButton = Checkbutton(self.tab2, text="Create CSV", variable=self.createCsv, onvalue=True,
                                           offvalue=False)
         self.csvCheckButton.grid(row=0, column=0, padx=5, pady=5, sticky=W)
+        self.createCsv = self.analyser_config.get("createCsv")
+        self.toggle_checkbutton(self.csvCheckButton, self.createCsv)
 
-        self.printClasses = self.analyser_config.get("printClasses")
+        self.printClasses = BooleanVar()
         self.printClassesCheckButton = Checkbutton(self.tab2, text="Print Classes", variable=self.printClasses,
                                                    onvalue=True, offvalue=False)
         self.printClassesCheckButton.grid(row=1, column=0, padx=5, pady=5, sticky=W)
-        #if self.printClasses:
-        #   self.printClassesCheckButton.select()
-        #else:
-        #    self.printClassesCheckButton.deselect()
+        self.printClasses = self.analyser_config.get("printClasses")
+        self.toggle_checkbutton(self.printClassesCheckButton, self.printClasses)
+
 
         self.printIou = BooleanVar()
         self.printIouCheckButton = Checkbutton(self.tab2, text="Print Iou", variable=self.printIou,
                                                    onvalue=True, offvalue=False)
         self.printIouCheckButton.grid(row=2, column=0, padx=5, pady=5, sticky=W)
+        self.printIou = self.analyser_config.get("printIou")
+        self.toggle_checkbutton(self.printIouCheckButton, self.printIou)
 
         self.printConfidence = BooleanVar()
         self.printConfidenceCheckButton = Checkbutton(self.tab2, text="Print Confidence", variable=self.printConfidence,
                                                onvalue=True, offvalue=False)
         self.printConfidenceCheckButton.grid(row=3, column=0, padx=5, pady=5, sticky=W)
+        self.printConfidence = self.analyser_config.get("printConfidence")
+        self.toggle_checkbutton(self.printConfidenceCheckButton, self.printConfidence)
 
         self.printNamesPath = BooleanVar()
         self.printNamesPathCheckButton = Checkbutton(self.tab2, text="Print Names Path", variable=self.printNamesPath,
                                            onvalue=True, offvalue=False)
         self.printNamesPathCheckButton.grid(row=4, column=0, padx=5, pady=5, sticky=W)
+        self.printNamesPath = self.analyser_config.get("printNamesPath")
+        self.toggle_checkbutton(self.printNamesPathCheckButton, self.printNamesPath)
 
         self.printWeightsPath = BooleanVar()
         self.printWeightsPathCheckButton = Checkbutton(self.tab2, text="Print Weights Path", variable=self.printWeightsPath,
                                                      onvalue=True, offvalue=False)
         self.printWeightsPathCheckButton.grid(row=5, column=0, padx=5, pady=5, sticky=W)
+        self.printWeightsPath = self.analyser_config.get("printWeightPath")
+        self.toggle_checkbutton(self.printWeightsPathCheckButton, self.printWeightsPath)
 
         self.usePollingLocation = BooleanVar()
         self.PollingCheckButton = Checkbutton(self.tab1, text="Use polling location for saving",
@@ -499,15 +509,23 @@ class UI(Frame):
             self.isPolling = False
         self.parent.destroy()
 
+    def toggle_checkbutton(self, checkbutton, stateVariable):
+        checkbutton.invoke()
+        if stateVariable:
+            checkbutton.state(['selected'])
+        else:
+            checkbutton.state(['!selected'])
+
+
     def save_json(self):
         config_location = 'config.json'
 
         config = {
             'printClasses': True,
-            'printIou': False,
+            'printIou': True,
             'printConfidence': False,
             'printNamesPath': False,
-            'printWeightPath': False,
+            'printWeightPath': True,
             'createCsv': False,
             'namesPath': './data/labels/coco.names',
             'weightsPath': './weights/yolov3.weights',
