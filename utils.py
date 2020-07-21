@@ -109,7 +109,7 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
             additional_text += "\n" + "Confidence: " + analyser_config['confidence']
         if analyser_config['printNamesPath']:
             additional_text += "\n" + analyser_config['namesPath']
-        if analyser_config['printWeightPath']:
+        if analyser_config['printWeightsPath']:
             additional_text += "\n" + analyser_config['weightsPath']
 
         if additional_text is not '':
@@ -181,7 +181,7 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
 
     number_of_additional_prints = 0
 
-    if analyser_config['printWeightPath']:
+    if analyser_config['printWeightsPath']:
         number_of_additional_prints += 1
         additional_text = analyser_config['weightsPath']
         draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints)
@@ -214,7 +214,7 @@ def load_json():
             'printIou': False,
             'printConfidence': False,
             'printNamesPath': False,
-            'printWeightPath': False,
+            'printWeightsPath': False,
             'createCsv': False,
             'namesPath': './data/labels/coco.names',
             'weightsPath': './weights/yolov3.weights',

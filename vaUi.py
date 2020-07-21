@@ -319,6 +319,7 @@ class UI(Frame):
         Starts and stops polling
         """
         if not self.isPolling:
+            self.save_threshold_json()
             self.pollingButton['text'] = "Stop polling"
             self.pollingButton['style'] = "R.TButton"
             self.append_text("Polling started in location:\n" + self.pollingLocationEntry.get())
@@ -410,6 +411,7 @@ class UI(Frame):
             weights_path_file = open("currentweights.txt", "w")
             weights_path_file.write(self.weightsFileEntry.get())
             weights_path_file.close()
+            self.save_paths_json()
             self.append_text("Weights loaded")
             self.weightsLabel['text'] = os.path.basename(self.weightsFileEntry.get())
             self.classesLabel['text'] = os.path.basename(self.classesFileEntry.get())
@@ -421,6 +423,7 @@ class UI(Frame):
         """
         Analyse image
         """
+        self.save_threshold_json()
         namespath = self.get_names_path()
         try:
             self.append_text("Starting image analysis...")
@@ -435,6 +438,7 @@ class UI(Frame):
         """
         Analyse video
         """
+        self.save_paths_json()
         namespath = self.get_names_path()
         try:
             self.append_text("Starting video analysis...")
@@ -538,38 +542,35 @@ class UI(Frame):
     def save_paths_json(self):
         config_location = 'config.json'
 
-        config = {
-            'printClasses': True,
-            'printIou': True,
-            'printConfidence': False,
-            'printNamesPath': False,
-            'printWeightPath': True,
-            'createCsv': False,
-            'namesPath': './data/labels/coco.names',
-            'weightsPath': './weights/yolov3.weights',
-            'iou': '0.5',
-            'confidence': '0.5'
-        }
+        if os.path.exists(config_location):
+            config = json.load(open(config_location))
+
+        config['namesPath'] = self.classesFileEntry.get()
+        config['weightsPath'] = self.weightsFileEntry.get()
+        # config = {
+        #         #     'namesPath': self.classesFileEntry.get(),
+        #         #     'weightsPath': self.weightsFileEntry.get()
+        #         # }
         json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
+
+        self.analyser_config = config
         return config
 
     def save_threshold_json(self):
         config_location = 'config.json'
-
-        config = {
-            'printClasses': True,
-            'printIou': True,
-            'printConfidence': False,
-            'printNamesPath': False,
-            'printWeightPath': True,
-            'createCsv': False,
-            'namesPath': './data/labels/coco.names',
-            'weightsPath': './weights/yolov3.weights',
-            'iou': '0.5',
-            'confidence': '0.5'
-        }
+        if os.path.exists(config_location):
+            config = json.load(open(config_location))
+        config['namesPath'] = self.classesFileEntry.get()
+        config['weightsPath'] = self.weightsFileEntry.get()
+        # config = {
+        #     'iou': self.iouEntry.get(),
+        #     'confidence': self.confidenceEntry.get()
+        # }
         json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
+
+        self.analyser_config = config
         return config
+
 
 def main():
     """
