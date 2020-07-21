@@ -143,7 +143,7 @@ class UI(Frame):
         # bg='#b828ae'
         self.pollingButton.grid(row=13, column=0, padx=5, pady=5)
 
-        self.saveSettingsButton = Button(self.tab2, text="Save settings", command=self.save_json)
+        self.saveSettingsButton = Button(self.tab2, text="Save settings", command=self.save_options_json)
         self.saveSettingsButton.grid(row=6, column=0, padx=5, pady=5)
 
         self.txt = Text(self.tab1, height=30, width=50)
@@ -517,7 +517,7 @@ class UI(Frame):
             checkbutton.state(['!selected'])
 
 
-    def save_json(self):
+    def save_options_json(self):
         config_location = 'config.json'
 
         config = {
@@ -535,6 +535,41 @@ class UI(Frame):
         json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
         return config
 
+    def save_paths_json(self):
+        config_location = 'config.json'
+
+        config = {
+            'printClasses': True,
+            'printIou': True,
+            'printConfidence': False,
+            'printNamesPath': False,
+            'printWeightPath': True,
+            'createCsv': False,
+            'namesPath': './data/labels/coco.names',
+            'weightsPath': './weights/yolov3.weights',
+            'iou': '0.5',
+            'confidence': '0.5'
+        }
+        json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
+        return config
+
+    def save_threshold_json(self):
+        config_location = 'config.json'
+
+        config = {
+            'printClasses': True,
+            'printIou': True,
+            'printConfidence': False,
+            'printNamesPath': False,
+            'printWeightPath': True,
+            'createCsv': False,
+            'namesPath': './data/labels/coco.names',
+            'weightsPath': './weights/yolov3.weights',
+            'iou': '0.5',
+            'confidence': '0.5'
+        }
+        json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
+        return config
 
 def main():
     """
