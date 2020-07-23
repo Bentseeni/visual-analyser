@@ -98,7 +98,8 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
                     #    [0, curr_txt_y_pos, txt_size[0], curr_txt_y_pos + txt_size[1]],
                     #    fill=tuple(color))
                     draw.text((0, curr_txt_y_pos),
-                              number_obj_txt, fill='white', font=font, stroke_width=(img.size[0] + img.size[1]) // 2000, stroke_fill='#FF00AF')
+                              number_obj_txt, fill='white', font=font,
+                              stroke_width=(img.size[0] + img.size[1]) // 2000, stroke_fill='#FF00AF')
                     #print(txt_size[1])
 
         # Print additional texts
@@ -108,9 +109,9 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
         if analyser_config['printConfidence']:
             additional_text += "\n" + "Confidence: " + analyser_config['confidence']
         if analyser_config['printNamesPath']:
-            additional_text += "\n" + analyser_config['namesPath']
+            additional_text += "\n" + os.path.basename(analyser_config['namesPath'])
         if analyser_config['printWeightsPath']:
-            additional_text += "\n" + analyser_config['weightsPath']
+            additional_text += "\n" + os.path.basename(analyser_config['weightsPath'])
 
         if additional_text is not '':
             add_font = ImageFont.truetype(font='./data/fonts/futur.ttf',
@@ -183,12 +184,12 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
 
     if analyser_config['printWeightsPath']:
         number_of_additional_prints += 1
-        additional_text = analyser_config['weightsPath']
+        additional_text = os.path.basename(analyser_config['weightsPath'])
         draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints)
 
     if analyser_config['printNamesPath']:
         number_of_additional_prints += 1
-        additional_text = analyser_config['namesPath']
+        additional_text = os.path.basename(analyser_config['namesPath'])
         draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints)
 
     if analyser_config['printConfidence']:

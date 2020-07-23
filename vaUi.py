@@ -153,8 +153,6 @@ class UI(Frame):
         self.vsb.grid(row=0, column=2, sticky="nse", rowspan=16, padx=5, pady=5)
         self.txt.configure(yscrollcommand=self.vsb.set)
 
-        # self.weightsLocation = self.get_current_weights_path()
-        # self.classesLocation = self.get_names_path()
         self.weightsLocation = self.analyser_config['weightsPath']
         self.classesLocation = self.analyser_config['namesPath']
 
@@ -407,12 +405,7 @@ class UI(Frame):
         try:
             self.append_text("Loading weights...")
             load_weights.main(weights_file=self.weightsFileEntry.get(), class_names_file=self.classesFileEntry.get())
-            # names_path_file = open("namespath.txt", "w")
-            # names_path_file.write(self.classesFileEntry.get())
-            # names_path_file.close()
-            # weights_path_file = open("currentweights.txt", "w")
-            # weights_path_file.write(self.weightsFileEntry.get())
-            # weights_path_file.close()
+
             self.save_paths_json()
             self.append_text("Weights loaded")
             self.weightsLabel['text'] = os.path.basename(self.weightsFileEntry.get())
@@ -426,7 +419,6 @@ class UI(Frame):
         Analyse image
         """
         self.save_threshold_json()
-        # namespath = self.get_names_path()
         namespath = self.analyser_config['namesPath']
 
         try:
@@ -443,7 +435,6 @@ class UI(Frame):
         Analyse video
         """
         self.save_threshold_json()
-        # namespath = self.get_names_path()
         namespath = self.analyser_config['namesPath']
         try:
             self.append_text("Starting video analysis...")
@@ -453,36 +444,6 @@ class UI(Frame):
         except Exception as err:
             self.append_text("error in video analysis")
             self.append_text(err)
-
-    # def get_names_path(self):
-    #     """
-    #     Gets name path from names path file
-    #     """
-    #     try:
-    #         names_path_file = open("namespath.txt")
-    #         names_path = names_path_file.read()
-    #         names_path_file.close()
-    #     except Exception as err:
-    #         self.append_text("Couldn't read namespath.txt, using default .names")
-    #         print(err)
-    #         names_path = self.classesLocation
-    #     finally:
-    #         return names_path
-
-    # def get_current_weights_path(self):
-    #     """
-    #     Gets last used weights path
-    #     """
-    #     try:
-    #         current_weights_file = open("currentweights.txt")
-    #         current_weights_path = current_weights_file.read()
-    #         current_weights_file.close()
-    #     except Exception as err:
-    #         self.append_text("Couldn't read currentweights.txt")
-    #         print(err)
-    #         current_weights_path = "default/unknown"
-    #     finally:
-    #         return current_weights_path
 
     def test(self):
         """
@@ -526,7 +487,6 @@ class UI(Frame):
         else:
             checkbutton.state(['!selected'])
 
-
     def save_options_json(self):
         config_location = 'config.json'
 
@@ -552,10 +512,7 @@ class UI(Frame):
 
         config['namesPath'] = self.classesFileEntry.get()
         config['weightsPath'] = self.weightsFileEntry.get()
-        # config = {
-        #         #     'namesPath': self.classesFileEntry.get(),
-        #         #     'weightsPath': self.weightsFileEntry.get()
-        #         # }
+
         json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
 
         self.analyser_config = config
@@ -568,10 +525,7 @@ class UI(Frame):
             config = json.load(open(config_location))
         config['iou'] = self.iouEntry.get()
         config['confidence'] = self.confidenceEntry.get()
-        # config = {
-        #     'iou': self.iouEntry.get(),
-        #     'confidence': self.confidenceEntry.get()
-        # }
+
         json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
 
         self.analyser_config = config
@@ -595,6 +549,7 @@ def main():
     root.protocol("WM_DELETE_WINDOW", ui.disable_event)
     root.geometry("860x520+300+300")
     root.mainloop()
+
 
 if __name__ == '__main__':
     main()
