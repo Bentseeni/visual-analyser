@@ -1,6 +1,7 @@
 import os
 from tkinter import *
 from tkinter import filedialog as fd
+from tkinter import colorchooser
 import tkinter.ttk as ttk
 from tkinter.ttk import *
 import load_weights
@@ -46,7 +47,6 @@ class UI(Frame):
     image_extensions = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".tga", ".webp"]
     isPolling = False
     analyser_config = load_json()
-    # print(analyser_config)
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
@@ -131,16 +131,15 @@ class UI(Frame):
         self.confidenceEntry.grid(row=6, column=0, sticky=E, padx=5, pady=5)
         self.confidenceEntry.insert(0, "0.5")
 
+
         self.loadWeightsButton = Button(self.tab1, text="Load Weights", command=self.thread_start_weights)
         self.loadWeightsButton.grid(row=4, column=0, padx=5, pady=5)
 
         self.analyseButton = Button(self.tab1, text="Analyse", command=self.start_analyse, style="G.TButton")
-        # background=self.green, height=3, width=20
         self.analyseButton.grid(row=8, column=0, padx=5, pady=5, ipady=10)
-        print(self.analyseButton.winfo_class())
+        #print(self.analyseButton.winfo_class())
 
         self.pollingButton = Button(self.tab1, text="Start polling", command=self.start_polling, style="P.TButton")
-        # bg='#b828ae'
         self.pollingButton.grid(row=13, column=0, padx=5, pady=5)
 
         self.saveSettingsButton = Button(self.tab2, text="Save settings", command=self.save_options_json)
@@ -168,6 +167,13 @@ class UI(Frame):
         self.confidenceLbl = Label(self.tab1, text="confidence")
         self.confidenceLbl.grid(row=6, column=1, padx=5, pady=5)
 
+        self.textColorLabel = Label(self.tab2, width=5)
+        self.textColorLabel.grid(row=0, column=1, padx=5, pady=5)
+        self.textColorLabel.configure(background='black')
+
+        self.textStrokeColorLabel = Label(self.tab2, width=5)
+        self.textStrokeColorLabel.grid(row=1, column=1, padx=5, pady=5)
+        self.textStrokeColorLabel.configure(background='black')
 
         self.createCsv = BooleanVar()
         self.csvCheckButton = Checkbutton(self.tab2, text="Create CSV", variable=self.createCsv, onvalue=True,
@@ -183,31 +189,31 @@ class UI(Frame):
         self.printClasses.set(self.analyser_config.get("printClasses"))
         self.toggle_checkbutton(self.printClassesCheckButton, self.printClasses)
 
-
         self.printIou = BooleanVar()
         self.printIouCheckButton = Checkbutton(self.tab2, text="Print Iou", variable=self.printIou,
-                                                   onvalue=True, offvalue=False)
+                                               onvalue=True, offvalue=False)
         self.printIouCheckButton.grid(row=2, column=0, padx=5, pady=5, sticky=W)
         self.printIou.set(self.analyser_config.get("printIou"))
         self.toggle_checkbutton(self.printIouCheckButton, self.printIou)
 
         self.printConfidence = BooleanVar()
         self.printConfidenceCheckButton = Checkbutton(self.tab2, text="Print Confidence", variable=self.printConfidence,
-                                               onvalue=True, offvalue=False)
+                                                      onvalue=True, offvalue=False)
         self.printConfidenceCheckButton.grid(row=3, column=0, padx=5, pady=5, sticky=W)
         self.printConfidence.set(self.analyser_config.get("printConfidence"))
         self.toggle_checkbutton(self.printConfidenceCheckButton, self.printConfidence)
 
         self.printNamesPath = BooleanVar()
         self.printNamesPathCheckButton = Checkbutton(self.tab2, text="Print Names Path", variable=self.printNamesPath,
-                                           onvalue=True, offvalue=False)
+                                                     onvalue=True, offvalue=False)
         self.printNamesPathCheckButton.grid(row=4, column=0, padx=5, pady=5, sticky=W)
         self.printNamesPath.set(self.analyser_config.get("printNamesPath"))
         self.toggle_checkbutton(self.printNamesPathCheckButton, self.printNamesPath)
 
         self.printWeightsPath = BooleanVar()
-        self.printWeightsPathCheckButton = Checkbutton(self.tab2, text="Print Weights Path", variable=self.printWeightsPath,
-                                                     onvalue=True, offvalue=False)
+        self.printWeightsPathCheckButton = Checkbutton(self.tab2, text="Print Weights Path",
+                                                       variable=self.printWeightsPath,
+                                                       onvalue=True, offvalue=False)
         self.printWeightsPathCheckButton.grid(row=5, column=0, padx=5, pady=5, sticky=W)
         self.printWeightsPath.set(self.analyser_config.get("printWeightsPath"))
         self.toggle_checkbutton(self.printWeightsPathCheckButton, self.printWeightsPath)
@@ -270,28 +276,11 @@ class UI(Frame):
         class_names.insert(0, "frame")
         print(class_names)
         filename = "test_file.csv"
-        #print(self.csvCheckButton.state())
         with open(filename, 'w') as csvfile:
             csvwriter = csv.writer(csvfile)
             csvfile.write("sep=,")
             csvfile.write('\n')
             csvwriter.writerow(class_names)
-
-    """def select_save_location(self):
-        self.saveLocation = fd.askdirectory()
-        if self.saveLocation == "":
-            self.saveLocation = os.getcwd()
-        self.saveLocationEntry.delete(0, END)
-        self.saveLocationEntry.insert(0, self.saveLocation)
-        print(self.saveLocation)"""
-
-    """def select_polling_location(self):
-        pollingLocation = fd.askdirectory()
-        if pollingLocation == "":
-            pollingLocation = os.getcwd()
-        self.pollingLocationEntry.delete(0, END)
-        self.pollingLocationEntry.insert(0, pollingLocation)
-        print(pollingLocation)"""
 
     def select_folder(self, entry):
         """
@@ -305,14 +294,6 @@ class UI(Frame):
         entry.delete(0, END)
         entry.insert(0, folderLocation)
         print(folderLocation)
-
-    """def select_polling_save_location(self):
-        pollingSaveLocation = fd.askdirectory()
-        if pollingSaveLocation == "":
-            pollingSaveLocation = os.getcwd()
-        self.pollingSaveLocationEntry.delete(0, END)
-        self.pollingSaveLocationEntry.insert(0, pollingSaveLocation)
-        print(pollingSaveLocation)"""
 
     def start_polling(self):
         """
@@ -361,15 +342,12 @@ class UI(Frame):
         """
         Starts Analyse
         """
-        print(self.dlg)
 
-        # if pathlib.Path(self.dlg[0]).suffix.lower() == ".mp4":
         if pathlib.Path(self.dlg[0]).suffix.lower() in self.video_extensions:
             print(pathlib.Path(self.dlg[0]).suffix)
             analyse_thread_video = threading.Thread(target=self.analyse_video)
             analyse_thread_video.start()
 
-        # elif pathlib.Path(self.dlg[0]).suffix.lower() == ".jpg":
         elif pathlib.Path(self.dlg[0]).suffix.lower() in self.image_extensions:
             print(pathlib.Path(self.dlg[0]).suffix)
             analyse_thread_images = threading.Thread(target=self.analyse_images)
@@ -449,11 +427,10 @@ class UI(Frame):
         """
         test function
         """
-        if self.usePollingLocation:
-            self.pollingSaveLocationButton.configure(state=DISABLED)
-            print("this is test")
-        elif not self.usePollingLocation:
-            print("this is test")
+        color_code = colorchooser.askcolor(title= "Choose color")
+        self.append_text(color_code[1])
+        self.textColorLabel['background'] = color_code[1]
+        self.textStrokeColorLabel['background'] = color_code[1]
 
     def disable_polling_save_location(self):
         """
@@ -480,7 +457,12 @@ class UI(Frame):
         self.parent.destroy()
 
     def toggle_checkbutton(self, checkbutton, stateVariable):
-        #checkbutton.invoke()
+        """
+        Checks or unchecks given check button
+        :param checkbutton: checkbutton widget
+        :param stateVariable: Boolean
+        :return: None
+        """
         checkbutton.state(['!alternate'])
         if stateVariable.get():
             checkbutton.state(['selected'])
@@ -488,6 +470,9 @@ class UI(Frame):
             checkbutton.state(['!selected'])
 
     def save_options_json(self):
+        """
+        Saves options to json
+        """
         config_location = 'config.json'
 
         if os.path.exists(config_location):
@@ -505,6 +490,9 @@ class UI(Frame):
         return config
 
     def save_paths_json(self):
+        """
+        Saves names and weights path to json
+        """
         config_location = 'config.json'
 
         if os.path.exists(config_location):
@@ -519,6 +507,9 @@ class UI(Frame):
         return config
 
     def save_threshold_json(self):
+        """
+        Saves iou and confidence to json
+        """
         config_location = 'config.json'
 
         if os.path.exists(config_location):
