@@ -97,9 +97,13 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
                     #draw.rectangle(
                     #    [0, curr_txt_y_pos, txt_size[0], curr_txt_y_pos + txt_size[1]],
                     #    fill=tuple(color))
+                    # draw.text((0, curr_txt_y_pos),
+                    #           number_obj_txt, fill='white', font=font,
+                    #           stroke_width=(img.size[0] + img.size[1]) // 2000, stroke_fill='#FF00AF')
                     draw.text((0, curr_txt_y_pos),
-                              number_obj_txt, fill='white', font=font,
-                              stroke_width=(img.size[0] + img.size[1]) // 2000, stroke_fill='#FF00AF')
+                              number_obj_txt, fill=analyser_config['textColorHex'], font=font,
+                              stroke_width=(img.size[0] + img.size[1]) // 2000,
+                              stroke_fill=analyser_config['textStrokeColorHex'])
                     #print(txt_size[1])
 
         # Print additional texts
@@ -116,10 +120,16 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
         if additional_text is not '':
             add_font = ImageFont.truetype(font='./data/fonts/futur.ttf',
                                       size=(img.size[0] + img.size[1]) // 200)
-            add_txt_size = draw.multiline_textsize(additional_text, font=add_font, spacing=1, stroke_width=(img.size[0] + img.size[1]) // 2000)
+            add_txt_size = draw.multiline_textsize(additional_text, font=add_font, spacing=1,
+                                                   stroke_width=(img.size[0] + img.size[1]) // 2000)
+            # draw.multiline_text((0, img.size[1] - add_txt_size[1]),
+            #                     additional_text, fill='white', font=add_font, spacing=1,
+            #                     stroke_width=(img.size[0] + img.size[1]) // 2000,
+            #                     stroke_fill='#FF00AF')
             draw.multiline_text((0, img.size[1] - add_txt_size[1]),
-                                additional_text, fill='white', font=add_font, spacing=1, stroke_width=(img.size[0] + img.size[1]) // 2000,
-                                stroke_fill='#FF00AF')
+                                additional_text, fill=analyser_config['textColorHex'], font=add_font, spacing=1,
+                                stroke_width=(img.size[0] + img.size[1]) // 2000,
+                                stroke_fill=analyser_config['textStrokeColorHex'])
 
         # Convert image to RGB and save it to folder
         rgb_img = img.convert('RGB')
@@ -141,6 +151,8 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
         None.
     """
     analyser_config = load_json()
+
+
 
 
     boxes_dict = boxes_dicts[0]
@@ -173,10 +185,14 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
                                                                       cv2.FONT_HERSHEY_SIMPLEX,
                                                                       0.75, 1)
                 number_obj_txt = class_names[cls] + ": " + str(number_of_obj_for_cls)
+                # cv2.putText(frame, number_obj_txt, (0, curr_cls_number * text_height),
+                #             cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 180), 2)
+                # cv2.putText(frame, number_obj_txt, (1, curr_cls_number * text_height + 1),
+                #             cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1)
                 cv2.putText(frame, number_obj_txt, (0, curr_cls_number * text_height),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 180), 2)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.75, analyser_config['textStrokeColorRGB'][::-1], 2)
                 cv2.putText(frame, number_obj_txt, (1, curr_cls_number * text_height + 1),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.75, analyser_config['textColorRGB'][::-1], 1)
 
     # Print additional info
 
@@ -185,22 +201,26 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
     if analyser_config['printWeightsPath']:
         number_of_additional_prints += 1
         additional_text = os.path.basename(analyser_config['weightsPath'])
-        draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints)
+        draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints,
+                             analyser_config['textColorRGB'], analyser_config['textStrokeColorRGB'])
 
     if analyser_config['printNamesPath']:
         number_of_additional_prints += 1
         additional_text = os.path.basename(analyser_config['namesPath'])
-        draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints)
+        draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints,
+                             analyser_config['textColorRGB'], analyser_config['textStrokeColorRGB'])
 
     if analyser_config['printConfidence']:
         number_of_additional_prints += 1
         additional_text = "Confidence: " + analyser_config['confidence']
-        draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints)
+        draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints,
+                             analyser_config['textColorRGB'], analyser_config['textStrokeColorRGB'])
 
     if analyser_config['printIou']:
         number_of_additional_prints += 1
         additional_text = "IOU: " + analyser_config['iou']
-        draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints)
+        draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints,
+                             analyser_config['textColorRGB'], analyser_config['textStrokeColorRGB'])
 
 
 def load_json():
@@ -220,17 +240,21 @@ def load_json():
             'namesPath': './data/labels/coco.names',
             'weightsPath': './weights/yolov3.weights',
             'iou': '0.5',
-            'confidence': '0.5'
+            'confidence': '0.5',
+            'textColorHex': '#FFFFFF',
+            'textColorRGB': (255, 255, 255),
+            'textStrokeColorHex': '#FF00AF',
+            'textStrokeColorRGB': (255, 0, 180)
         }
         json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
         return config
 
 
-def draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints):
+def draw_additional_text(frame, frame_size, additional_text, number_of_additional_prints, text_color, text_stroke_color):
     (test_width, text_height), baseline = cv2.getTextSize(additional_text,
                                                           cv2.FONT_HERSHEY_SIMPLEX,
                                                           0.5, 1)
     cv2.putText(frame, additional_text, (0, int(frame_size[1]) - number_of_additional_prints * text_height),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 180), 2, bottomLeftOrigin=False)
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, text_stroke_color[::-1], 2, bottomLeftOrigin=False)
     cv2.putText(frame, additional_text, (1, int(frame_size[1]) - number_of_additional_prints * text_height + 1),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, bottomLeftOrigin=False)
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, text_color[::-1], 1, bottomLeftOrigin=False)
