@@ -154,6 +154,12 @@ class UI(Frame):
         self.saveSettingsButton = Button(self.tab2, text="Save settings", command=self.save_options_json)
         self.saveSettingsButton.grid(row=6, column=0, padx=5, pady=5)
 
+        self.textColorButton = Button(self.tab2, text="Text color", command=self.pick_text_color)
+        self.textColorButton.grid(row=0, column=2, padx=5, pady=5)
+
+        self.textStrokeColorButton = Button(self.tab2, text="Text stroke color", command=self.pick_text_stroke_color)
+        self.textStrokeColorButton.grid(row=1, column=2, padx=5, pady=5)
+
         self.txt = Text(self.tab1, height=30, width=50)
         self.txt.grid(row=0, column=2, pady=5, rowspan=16, padx=5)
 
@@ -176,12 +182,12 @@ class UI(Frame):
         self.confidenceLbl = Label(self.tab1, text="confidence")
         self.confidenceLbl.grid(row=6, column=1, padx=5, pady=5)
 
-        self.textColorLabel = Label(self.tab2, width=5)
+        self.textColorLabel = Label(self.tab2, width=5, borderwidth=2, relief="sunken")
         self.textColorLabel.grid(row=0, column=1, padx=5, pady=5)
         #self.textColorLabel.configure(background='black')
         self.textColorLabel['background'] = self.textColorHex
 
-        self.textStrokeColorLabel = Label(self.tab2, width=5)
+        self.textStrokeColorLabel = Label(self.tab2, width=5, borderwidth=2, relief="sunken")
         self.textStrokeColorLabel.grid(row=1, column=1, padx=5, pady=5)
         #self.textStrokeColorLabel.configure(background='black')
         self.textStrokeColorLabel['background'] = self.textStrokeColorHex
@@ -444,6 +450,21 @@ class UI(Frame):
         self.textColorLabel['background'] = color_code[1]
         self.textStrokeColorLabel['background'] = color_code[1]
 
+    def pick_text_color(self):
+
+        color_code = colorchooser.askcolor(title= "Choose color for text")
+        self.textColorRGB = color_code[0]
+        self.textColorHex = color_code[1]
+        self.textColorLabel['background'] = color_code[1]
+        #self.append_text("New text color: " + self.textColorHex)
+
+    def pick_text_stroke_color(self):
+
+        color_code = colorchooser.askcolor(title= "Choose color for text stroke")
+        self.textStrokeColorRGB = color_code[0]
+        self.textStrokeColorHex = color_code[1]
+        self.textStrokeColorLabel['background'] = color_code[1]
+
     def disable_polling_save_location(self):
         """
         Disables the usage of custom save location in polling
@@ -503,6 +524,7 @@ class UI(Frame):
 
         json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
         self.analyser_config = config
+        self.append_text("Settings saved")
         return config
 
     def save_paths_json(self):
