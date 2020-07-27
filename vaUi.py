@@ -451,15 +451,23 @@ class UI(Frame):
         self.textStrokeColorLabel['background'] = color_code[1]
 
     def pick_text_color(self):
+        """
+        Pick color for the text that is printed on
+        analysed images and videos.
+        """
 
         color_code = colorchooser.askcolor(title= "Choose color for text")
         self.textColorRGB = color_code[0]
         self.textColorHex = color_code[1]
         self.textColorLabel['background'] = color_code[1]
-        #self.append_text("New text color: " + self.textColorHex)
+        self.append_text("New text color: " +color_code[1])
+        self.append_text(color_code[0])
 
     def pick_text_stroke_color(self):
-
+        """
+        Pick color for the text stroke that is printed on
+        analysed images and videos.
+        """
         color_code = colorchooser.askcolor(title= "Choose color for text stroke")
         self.textStrokeColorRGB = color_code[0]
         self.textStrokeColorHex = color_code[1]
