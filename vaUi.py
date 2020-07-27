@@ -31,7 +31,11 @@ def load_json():
             'namesPath': './data/labels/coco.names',
             'weightsPath': './weights/yolov3.weights',
             'iou': '0.5',
-            'confidence': '0.5'
+            'confidence': '0.5',
+            'textColorHex': '#FFFFFF',
+            'textColorRGB': (255, 255, 255),
+            'textStrokeColorHex': '#FF00AF',
+            'textStrokeColorRGB': (255, 0, 180)
         }
         json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
         return config
@@ -52,6 +56,11 @@ class UI(Frame):
         Frame.__init__(self, parent)
 
         self.parent = parent
+
+        self.textColorHex = self.analyser_config.get("textColorHex")
+        self.textColorRGB = self.analyser_config.get("textColorRGB")
+        self.textStrokeColorHex = self.analyser_config.get("textStrokeColorHex")
+        self.textStrokeColorRGB = self.analyser_config.get("textStrokeColorRGB")
 
         self.init_ui()
 
@@ -169,11 +178,13 @@ class UI(Frame):
 
         self.textColorLabel = Label(self.tab2, width=5)
         self.textColorLabel.grid(row=0, column=1, padx=5, pady=5)
-        self.textColorLabel.configure(background='black')
+        #self.textColorLabel.configure(background='black')
+        self.textColorLabel['background'] = self.textColorHex
 
         self.textStrokeColorLabel = Label(self.tab2, width=5)
         self.textStrokeColorLabel.grid(row=1, column=1, padx=5, pady=5)
-        self.textStrokeColorLabel.configure(background='black')
+        #self.textStrokeColorLabel.configure(background='black')
+        self.textStrokeColorLabel['background'] = self.textStrokeColorHex
 
         self.createCsv = BooleanVar()
         self.csvCheckButton = Checkbutton(self.tab2, text="Create CSV", variable=self.createCsv, onvalue=True,
@@ -429,6 +440,7 @@ class UI(Frame):
         """
         color_code = colorchooser.askcolor(title= "Choose color")
         self.append_text(color_code[1])
+        self.append_text(color_code[0])
         self.textColorLabel['background'] = color_code[1]
         self.textStrokeColorLabel['background'] = color_code[1]
 
@@ -484,6 +496,10 @@ class UI(Frame):
         config['printNamesPath'] = self.printNamesPath.get()
         config['printWeightsPath'] = self.printWeightsPath.get()
         config['createCsv'] = self.createCsv.get()
+        config['textColorHex'] = self.textColorHex
+        config['textColorRGB'] = self.textColorRGB
+        config['textStrokeColorHex'] = self.textStrokeColorHex
+        config['textStrokeColorRGB'] = self.textStrokeColorRGB
 
         json.dump(config, open(config_location, 'w'), sort_keys=True, indent=4)
         self.analyser_config = config

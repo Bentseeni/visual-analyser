@@ -108,7 +108,7 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
     """
     Analyse polled images and videos
     :param thread_name: Name of Thread
-    :param q: Queue
+    :param q: Queue of to be analysed videos or images
     :param iou: iou value
     :param confidence: confidence value
     :param names: names file location
@@ -142,9 +142,6 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
             print(file_end)
             append_text(txt, root, file_end)
 
-            #save_loc = os.path.dirname(data)
-            #print(save_loc)
-
             append_text(txt, root, save_location)
 
             print(save_location)
@@ -152,7 +149,6 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
             data_list = []
             data_list.insert(0, data)
 
-            # if file_end.lower() == ".mp4":
             if file_end.lower() in video_extensions:
                 counter = counter + 1
                 try:
@@ -176,7 +172,6 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
                     print(err)
                     append_text(txt, root, "Error in video analysis")
                     append_text(txt, root, err)
-            # elif file_end.lower() == ".jpg":
             elif file_end.lower() in image_extensions:
                 counter = counter + 1
                 try:
