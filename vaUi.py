@@ -140,13 +140,12 @@ class UI(Frame):
         self.confidenceEntry.grid(row=6, column=0, sticky=E, padx=5, pady=5)
         self.confidenceEntry.insert(0, "0.5")
 
-
         self.loadWeightsButton = Button(self.tab1, text="Load Weights", command=self.thread_start_weights)
         self.loadWeightsButton.grid(row=4, column=0, padx=5, pady=5)
 
         self.analyseButton = Button(self.tab1, text="Analyse", command=self.start_analyse, style="G.TButton")
         self.analyseButton.grid(row=8, column=0, padx=5, pady=5, ipady=10)
-        #print(self.analyseButton.winfo_class())
+        # print(self.analyseButton.winfo_class())
 
         self.pollingButton = Button(self.tab1, text="Start polling", command=self.start_polling, style="P.TButton")
         self.pollingButton.grid(row=13, column=0, padx=5, pady=5)
@@ -184,12 +183,12 @@ class UI(Frame):
 
         self.textColorLabel = Label(self.tab2, width=5, borderwidth=2, relief="sunken")
         self.textColorLabel.grid(row=0, column=1, padx=5, pady=5)
-        #self.textColorLabel.configure(background='black')
+        # self.textColorLabel.configure(background='black')
         self.textColorLabel['background'] = self.textColorHex
 
         self.textStrokeColorLabel = Label(self.tab2, width=5, borderwidth=2, relief="sunken")
         self.textStrokeColorLabel.grid(row=1, column=1, padx=5, pady=5)
-        #self.textStrokeColorLabel.configure(background='black')
+        # self.textStrokeColorLabel.configure(background='black')
         self.textStrokeColorLabel['background'] = self.textStrokeColorHex
 
         self.createCsv = BooleanVar()
@@ -444,7 +443,7 @@ class UI(Frame):
         """
         test function
         """
-        color_code = colorchooser.askcolor(title= "Choose color")
+        color_code = colorchooser.askcolor(title="Choose color")
         self.append_text(color_code[1])
         self.append_text(color_code[0])
         self.textColorLabel['background'] = color_code[1]
@@ -456,22 +455,27 @@ class UI(Frame):
         analysed images and videos.
         """
 
-        color_code = colorchooser.askcolor(title= "Choose color for text")
-        self.textColorRGB = color_code[0]
-        self.textColorHex = color_code[1]
-        self.textColorLabel['background'] = color_code[1]
-        self.append_text("New text color: " +color_code[1])
-        self.append_text(color_code[0])
+        color_code = colorchooser.askcolor(title="Choose color for text")
+        if None not in color_code:
+            self.textColorRGB = color_code[0]
+            self.textColorHex = color_code[1]
+            self.textColorLabel['background'] = color_code[1]
+            self.append_text("New text color: " + color_code[1])
+            self.append_text(color_code[0])
 
     def pick_text_stroke_color(self):
         """
         Pick color for the text stroke that is printed on
         analysed images and videos.
         """
-        color_code = colorchooser.askcolor(title= "Choose color for text stroke")
-        self.textStrokeColorRGB = color_code[0]
-        self.textStrokeColorHex = color_code[1]
-        self.textStrokeColorLabel['background'] = color_code[1]
+
+        color_code = colorchooser.askcolor(title="Choose color for text stroke")
+        if None not in color_code:
+            self.textStrokeColorRGB = color_code[0]
+            self.textStrokeColorHex = color_code[1]
+            self.textStrokeColorLabel['background'] = color_code[1]
+            self.append_text("New text stroke color: " + color_code[1])
+            self.append_text(color_code[0])
 
     def disable_polling_save_location(self):
         """
