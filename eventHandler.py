@@ -178,7 +178,7 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
                     os.mkdir(save_location)
                 except FileExistsError as error:
                     print(error)
-                    append_text(txt, root, "Saved folder already exists")
+                    append_text(txt, root, "Analysed folder already exists")
                 except OSError as error:
                     print(error)
                     append_text(txt, root, error)
@@ -199,7 +199,7 @@ def process_data(thread_name, q, iou, confidence, names, create_csv, save_locati
             queueCheck.remove(data)
             print(queueCheck)
             queueLock.release()
-            append_text(txt, root, counter + " Files analysed")
+            append_text(txt, root, str(counter) + " Files analysed")
         else:
             queueLock.release()
         time.sleep(0.5)
