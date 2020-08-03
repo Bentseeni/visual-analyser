@@ -1,3 +1,13 @@
+"""
+Project: Object detection with OpenCV, tf and yolov3, Graphical User Interface included
+
+Authors: Matias Röyttä https://github.com/Bentseeni
+         Saku Huuha https://github.com/SakuH
+         Niko Hämäläinen https://github.com/GitSucks123
+         Jere Hannula https://github.com/jersku
+
+Github repository: https://github.com/Bentseeni/visual-analyser
+"""
 import os
 from tkinter import *
 from tkinter import filedialog as fd
