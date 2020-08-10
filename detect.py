@@ -88,12 +88,10 @@ def main(type, input_names, save_folder='./detections', iou_threshold=0.5, confi
 
             # Set name and save destination for output video
             input_name_base = os.path.basename(input_names[0])
-            # video_save_path = save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.mp4'
             video_save_path = save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed' + \
                               os.path.splitext(input_name_base)[1]
             if os.path.splitext(input_name_base)[1] in _TO_MP4_FORMAT_LIST:
                 video_save_path = save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.mp4'
-            # print(os.path.splitext(input_name_base)[1])
 
             # Create output video
             out = cv2.VideoWriter(video_save_path, fourcc, fps,

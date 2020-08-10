@@ -38,12 +38,17 @@ This will convert the yolov3 weights into TensorFlow .ckpt model files!
 
 ## Running the model
  The script works on images, or video. Don't forget to set the IoU (Intersection over Union) and confidence thresholds.
+ 
+ IoU and confidence should be values between 0 and 1. If you're not getting enough recognitions, try raising the confidence threshold.
+ If you're getting many false positives, try lowering the confidence threshold.
+ 
+ If you're having problems with overlapping objects or recognitions, try adjusting the IoU threshold.
 ### Usage
 Click on "Open file" to choose the video file or image file(s) you want to process. You can analyse only one video at a time, but you can run the analysis on multiple images at once.
 
 Click on "Save location" to choose the folder where the analysed files will be saved.
 
-Click on "Analyse" to start the analysis. If you want to END the analysis of a video at any time, press 'q'.
+Click on "Analyse" to start the analysis. If you want to END the analysis of a video at any time, press 'q'. Whatever was processed until then will still be saved.
 
 The analysed file will simply have the name of the original file with '_analysed' added to the name. This means running the analysis on the same file with different settings will overwrite earlier analyses of the same file if you choose to save in the same folder.
 
@@ -57,6 +62,20 @@ Check the "Use polling location for saving" box if you want to save analysed ima
 
 Click "Start polling" to start polling.
 Click "Stop polling" to stop polling.
+
+### Options & settings
+Click "Options" to get to the options tab.
+
+* Create CSV: if toggled on, when doing video analysis, a csv-file containing the number recognitions per class each second will be created.
+* Print Classes: Prints the number and class names of recognitions each frame or each image on the top left corner.
+* Print Iou: Prints the IoU threshold value used for that particular run of the analyser. (bottom left corner)
+* Print Confidence: Prints the confidence threshold value used for that particular run of the analyser. (bottom left corner)
+* Print Names Path: Prints the name of the .names-file used. (bottom left corner)
+* Print Weights Path: Prints the name of the .WEIGHTS-file used. (bottom left corner)
+* Text color: Choose the primary text color for the previously mentioned information.
+* Text stroke color: Choose the secondary or text stroke color for the previously mentioned information.
+
+Settings are applied when the "Save settings" button is pressed.
 ## To-Do List
 * Finish documentation
 

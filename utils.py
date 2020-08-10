@@ -91,20 +91,14 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
                 if analyser_config['printClasses']:
                     number_obj_txt = class_names[cls] + ": " + str(number_of_obj_for_cls)
                     txt_size = draw.textsize(number_obj_txt, font=font)
-                    # draw.text((0, curr_cls_number * txt_size[1] * 2),
-                    #        number_obj_txt, fill='green', font=font)
+
                     curr_txt_y_pos += txt_size[1] + 1
-                    #draw.rectangle(
-                    #    [0, curr_txt_y_pos, txt_size[0], curr_txt_y_pos + txt_size[1]],
-                    #    fill=tuple(color))
-                    # draw.text((0, curr_txt_y_pos),
-                    #           number_obj_txt, fill='white', font=font,
-                    #           stroke_width=(img.size[0] + img.size[1]) // 2000, stroke_fill='#FF00AF')
+
                     draw.text((0, curr_txt_y_pos),
                               number_obj_txt, fill=analyser_config['textColorHex'], font=font,
                               stroke_width=(img.size[0] + img.size[1]) // 2000,
                               stroke_fill=analyser_config['textStrokeColorHex'])
-                    #print(txt_size[1])
+
 
         # Print additional texts
         additional_text = ''
@@ -122,10 +116,6 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
                                       size=(img.size[0] + img.size[1]) // 200)
             add_txt_size = draw.multiline_textsize(additional_text, font=add_font, spacing=1,
                                                    stroke_width=(img.size[0] + img.size[1]) // 2000)
-            # draw.multiline_text((0, img.size[1] - add_txt_size[1]),
-            #                     additional_text, fill='white', font=add_font, spacing=1,
-            #                     stroke_width=(img.size[0] + img.size[1]) // 2000,
-            #                     stroke_fill='#FF00AF')
             draw.multiline_text((0, img.size[1] - add_txt_size[1]),
                                 additional_text, fill=analyser_config['textColorHex'], font=add_font, spacing=1,
                                 stroke_width=(img.size[0] + img.size[1]) // 2000,
@@ -134,9 +124,7 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size, save_folder='./d
         # Convert image to RGB and save it to folder
         rgb_img = img.convert('RGB')
         input_name_base = os.path.basename(img_name)
-        #rgb_img.save(save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed.jpg')
         rgb_img.save(save_folder + '/' + os.path.splitext(input_name_base)[0] + '_analysed' + os.path.splitext(input_name_base)[1])
-        # rgb_img.save(save_folder + '/' + str(num + 1) + '.jpg')
 
 
 def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
@@ -151,9 +139,6 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
         None.
     """
     analyser_config = load_json()
-
-
-
 
     boxes_dict = boxes_dicts[0]
     resize_factor = (frame_size[0] / model_size[1], frame_size[1] / model_size[0])
@@ -185,10 +170,6 @@ def draw_frame(frame, frame_size, boxes_dicts, class_names, model_size):
                                                                       cv2.FONT_HERSHEY_SIMPLEX,
                                                                       0.75, 1)
                 number_obj_txt = class_names[cls] + ": " + str(number_of_obj_for_cls)
-                # cv2.putText(frame, number_obj_txt, (0, curr_cls_number * text_height),
-                #             cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 180), 2)
-                # cv2.putText(frame, number_obj_txt, (1, curr_cls_number * text_height + 1),
-                #             cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1)
                 cv2.putText(frame, number_obj_txt, (0, curr_cls_number * text_height),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.75, analyser_config['textStrokeColorRGB'][::-1], 2)
                 cv2.putText(frame, number_obj_txt, (1, curr_cls_number * text_height + 1),
