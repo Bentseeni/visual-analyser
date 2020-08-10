@@ -48,9 +48,12 @@ Click on "Analyse" to start the analysis. If you want to END the analysis of a v
 The analysed file will simply have the name of the original file with '_analysed' added to the name. This means running the analysis on the same file with different settings will overwrite earlier analyses of the same file if you choose to save in the same folder.
 
 ### Polling a folder
-This function allows analysis to happen automatically as image or video files are added to a folder. Analyses will be saved in the same folder.
+This function allows analysis to happen automatically as image or video files are added to a folder. Analyses will be saved in the same folder or different chosen folder.
+This feature can be used for example with Syncthing application. 
 
-Click "Save location" to choose the folder to poll. 
+Click "Polling location" to choose the folder to poll.
+
+Check the "Use polling location for saving" box if you want to save analysed images and videos to same location you are polling.
 
 Click "Start polling" to start polling.
 Click "Stop polling" to stop polling.

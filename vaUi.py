@@ -193,12 +193,10 @@ class UI(Frame):
 
         self.textColorLabel = Label(self.tab2, width=5, borderwidth=2, relief="sunken")
         self.textColorLabel.grid(row=0, column=1, padx=5, pady=5)
-        # self.textColorLabel.configure(background='black')
         self.textColorLabel['background'] = self.textColorHex
 
         self.textStrokeColorLabel = Label(self.tab2, width=5, borderwidth=2, relief="sunken")
         self.textStrokeColorLabel.grid(row=1, column=1, padx=5, pady=5)
-        # self.textStrokeColorLabel.configure(background='black')
         self.textStrokeColorLabel['background'] = self.textStrokeColorHex
 
         self.createCsv = BooleanVar()
